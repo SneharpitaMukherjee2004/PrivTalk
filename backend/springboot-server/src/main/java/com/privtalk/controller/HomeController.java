@@ -32,7 +32,7 @@ public class HomeController {
     public ResponseEntity<?> verifyEmail(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         emailService.sendVerificationEmail(email);
-        return ResponseEntity.ok().body(Map.of("message", "Verification email sent"));
+        return ResponseEntity.ok().body(Map.of("message", "Verification email sent,Check your email to verify your account & Login."));
     }
 }
 
