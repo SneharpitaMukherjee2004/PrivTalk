@@ -4,20 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Login - PrivTalk</title>
-    <script>
-        function sendVerification() {
-            const email = document.getElementById("email").value;
-        
-            fetch("http://localhost:8000/send-verification", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email })
-            })
-            .then(response => response.json())
-            .then(data => alert(data.message))
-            .catch(error => console.error("Error:", error));
-        }
-        </script>
+<script>
+    function sendVerification(event) {
+        event?.preventDefault(); // Just in case
+
+        const email = document.getElementById("email").value;
+
+        fetch("http://localhost:8081/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Network response was not ok");
+            return response.json();
+        })
+        .then(data => alert(data.message))
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Error sending verification email");
+        });
+    }
+</script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -69,7 +77,8 @@
              
             <label for="email">Email ID</label>
             <input type="email" id="email" placeholder="Enter your email" required />
-            <button type="submit" onclick="sendVerification()">Send Verification Link</button>
+            <button type="button" onclick="sendVerification()">Send Verification Link</button>
+            <br>
             <button type="submit">Login</button>
             
         </form>

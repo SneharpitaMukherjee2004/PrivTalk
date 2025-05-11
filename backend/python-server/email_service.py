@@ -1,11 +1,11 @@
-from fastapi import FastAPI
-from pydantic import BaseModel, EmailStr
+from fastapi import FastAPI # type: ignore
+from pydantic import BaseModel, EmailStr # type: ignore
 import smtplib
 from email.mime.text import MIMEText
 import secrets
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from datetime import datetime
-
+# uvicorn email_service:app --reload --port 1000      run in terminal for python run
 app = FastAPI()
 
 # CORS setup
@@ -19,6 +19,7 @@ app.add_middleware(
 
 class EmailRequest(BaseModel):
     email: EmailStr
+    
 
 
 @app.post("/send-verification")

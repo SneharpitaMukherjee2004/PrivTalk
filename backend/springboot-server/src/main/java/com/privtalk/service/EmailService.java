@@ -1,35 +1,43 @@
 package com.privtalk.service;
 
+import com.privtalk.model.VerificationToken;
+import com.privtalk.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class EmailService {
 
     @Autowired
-    private RestTemplate restTemplate;
-
+    private VerificationTokenRepository tokenRepository;
     public void sendVerificationEmail(String email) {
-        String url = "http://localhost:8000/send-verification";  // FastAPI endpoint
+        try {
+        // Prepare request body: only the email field
+        Map<String, String> payload = new HashMap<>();
+        payload.put("email", email);  // Match FastAPI's model
 
-        Map<String, String> body = new HashMap<>();
-        body.put("email", email);
-
+        // Set headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
+        // Build HTTP request
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(payload, headers);
 
-        try {
-            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-            System.out.println("Response from FastAPI: " + response.getBody());
-        } catch (Exception e) {
-            System.err.println("Email verification failed: " + e.getMessage());
-        }
+        // Send to FastAPI
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "http://localhost:1000/send-verification";
+        ResponseEntity<String> response = restTemplate.postForEntity(apiUrl, entity, String.class);
+
+        System.out.println("Email API Response: " + response.getBody());
+
+    } catch (Exception e) {
+        System.err.println("Error sending verification email: " + e.getMessage());
+        e.printStackTrace();
     }
+}
+
 }

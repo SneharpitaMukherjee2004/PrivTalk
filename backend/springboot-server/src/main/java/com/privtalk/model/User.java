@@ -1,25 +1,32 @@
 package com.privtalk.model;
 
+import jakarta.persistence.*;
+
+@Entity
 public class User {
 
-    private String email;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String username;
+
     private String password;
 
-    // Constructor
-    public User() {
-    }
+    private String email;
+
+    private boolean emailVerified;
 
     // Getters and Setters
-    public String getEmail() {
-        return email;
+
+    public Long getId() {
+        return id;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    // Add other getters/setters as needed
     public String getUsername() {
         return username;
     }
@@ -34,5 +41,21 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 }
