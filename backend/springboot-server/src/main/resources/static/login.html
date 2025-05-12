@@ -3,15 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <title>Login - PrivTalk</title>
-  <style>
-    * {
+ 
+ 
+ <style>
+  
+* {
       box-sizing: border-box;
     }
 
-    body {
+body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom right, #f3f4f6, #e2e8f0);
+      background: linear-gradient(to bottom right, #f3f4f6, #95b6e0);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -140,7 +143,8 @@
     }
 
     input::placeholder {
-      color: transparent;
+      color: rgba(255, 255, 255, 0) ;
+
     }
 
     button {
@@ -189,7 +193,8 @@
       font-size: 0.95rem;
       color: #718096;
     }
-  </style>
+
+ </style>
 
   <script>
     function sendVerification(event) {
@@ -235,7 +240,7 @@
         </div>
 
         <button type="button" onclick="sendVerification()">Send Verification Link</button>
-        <button type="submit">Login</button>
+        
       </form>
       <div class="footer">PrivTalk &copy; 2025</div>
     </div>
