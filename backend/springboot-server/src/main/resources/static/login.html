@@ -1,87 +1,244 @@
-<!-- File: src/main/resources/static/login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Login - PrivTalk</title>
-<script>
+  <meta charset="UTF-8" />
+  <title>Login - PrivTalk</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom right, #f3f4f6, #e2e8f0);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100%;
+    }
+
+    .wrapper {
+      position: relative;
+      padding-top: 50px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .login-container {
+      background: #ffffff;
+      padding: 4rem 2.5rem 3rem;
+      border-radius: 16px;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.12);
+      border: 1px solid #e0e0e0;
+      width: 100%;
+      max-width: 500px;
+      min-width: 320px;
+      position: relative;
+      animation: fade-in 0.6s ease-out;
+    }
+
+    .login-container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo-circle {
+      position: absolute;
+      top: -35px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(to right, #667eea, #764ba2);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+      font-size: 28px;
+      border: 4px solid white;
+      z-index: 10;
+    }
+
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 32px;
+      margin-top: 12px;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.7px;
+      background: linear-gradient(to right, #5a67d8, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 4px rgba(122, 122, 122, 0.2);
+    }
+
+    .form-group {
+      position: relative;
+      margin-bottom: 28px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 16px 14px 14px;
+      border: 1px solid #cbd5e0;
+      border-radius: 8px;
+      font-size: 15px;
+      color: #2d3748;
+      background-color: #f9fafb;
+      transition: all 0.25s ease;
+    }
+
+    .form-group input:focus {
+      border-color: #7f9cf5;
+      box-shadow: 0 0 8px rgba(127, 156, 245, 0.3);
+      background-color: #ffffff;
+      outline: none;
+    }
+
+    .form-group label {
+      position: absolute;
+      top: 50%;
+      left: 16px;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: #000;
+      pointer-events: none;
+      background: #ffffff;
+      padding: 0 4px;
+      transition: 0.2s ease all;
+    }
+
+    .form-group input:focus + label,
+    .form-group input:not(:placeholder-shown) + label {
+      top: -10px;
+      font-size: 12px;
+      color: #5a67d8;
+    }
+
+    input::placeholder {
+      color: transparent;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
+    }
+
+    button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -75%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: skewX(-20deg);
+      transition: left 0.4s;
+      z-index: 0;
+    }
+
+    button:hover::before {
+      left: 130%;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #5a67d8, #6b46c1);
+      transform: translateY(-1px);
+    }
+
+    .footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #718096;
+    }
+  </style>
+
+  <script>
     function sendVerification(event) {
-        event?.preventDefault(); // Just in case
+      event?.preventDefault();
+      const email = document.getElementById("email").value;
 
-        const email = document.getElementById("email").value;
-
-        fetch("http://localhost:8081/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email })
+      fetch("http://localhost:8081/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+        .then((response) => {
+          if (!response.ok) throw new Error("Network response was not ok");
+          return response.json();
         })
-        .then(response => {
-            if (!response.ok) throw new Error("Network response was not ok");
-            return response.json();
-        })
-        .then(data => alert(data.message))
-        .catch(error => {
-            console.error("Error:", error);
-            alert("Error sending verification email");
+        .then((data) => alert(data.message))
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Error sending verification email");
         });
     }
-</script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-        .login-container {
-            background: #fff;
-            padding: 2rem;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-            border-radius: 8px;
-            width: 300px;
-        }
-        input[type="text"], input[type="password"],input[type="email"]  {
-            width: 100%;
-            padding: 10px;
-            margin-top: 8px;
-            margin-bottom: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px ;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-    </style>
+  </script>
 </head>
 <body>
+  <div class="wrapper">
+    <div class="logo-circle">P</div>
     <div class="login-container">
-        <h2>Login</h2>
-        <form id="loginForm" action="/login" method="post">
-            <label for="username">Username</label>
-            <input type="text" name="username" required>
+      <h2>Login to PrivTalk</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <input type="text" name="username" id="username" placeholder="Username" required />
+          <label for="username">Username</label>
+        </div>
 
-            <label for="password">Password</label>
-            <input type="password" name="password" required>
-             
-            <label for="email">Email ID</label>
-            <input type="email" id="email" placeholder="Enter your email" required />
-            <button type="button" onclick="sendVerification()">Send Verification Link</button>
+        <div class="form-group">
+          <input type="password" name="password" id="password" placeholder="Password" required />
+          <label for="password">Password</label>
+        </div>
 
-            
-        </form>
+        <div class="form-group">
+          <input type="email" name="email" id="email" placeholder="Email" required />
+          <label for="email">Email ID</label>
+        </div>
+
+        <button type="button" onclick="sendVerification()">Send Verification Link</button>
+        <button type="submit">Login</button>
+      </form>
+      <div class="footer">PrivTalk &copy; 2025</div>
     </div>
+  </div>
 </body>
 </html>
-
