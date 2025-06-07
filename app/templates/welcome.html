@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to PrivTalk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* Global Styles for a clean foundation */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh; /* Ensure full viewport height */
-            /* MODIFIED: Gradient sky blue background */
-            background: linear-gradient(135deg, #e0f2f7 0%, #a7d9ed 100%); /* Light sky blue to a slightly deeper sky blue */
+            /* MODIFIED: More vibrant and dynamic sky blue gradient background */
+            background: linear-gradient(135deg, #a8dadc 0%, #457b9d 100%); /* A more sophisticated blue gradient */
             color: #333; /* Default text color */
             line-height: 1.6;
             -webkit-font-smoothing: antialiased; /* Smoother font rendering */
@@ -23,16 +24,17 @@
         }
 
         /* Main container for centering content */
-      .welcome-container {
-            background-color: #fff;
+   .welcome-container {
+            background-color: rgba(255, 255, 255, 0.9); /* MODIFIED: Semi-transparent white for glassmorphism */
             padding: 40px;
-            border-radius: 12px;
-            /* MODIFIED: More pronounced and sophisticated soft shadow */
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
-            /* MODIFIED: Subtle border matching the new background tones */
-            border: 1px solid #cce7f0;
+            border-radius: 16px; /* MODIFIED: Slightly more rounded corners */
+            /* MODIFIED: Glassmorphism-style shadow and border */
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); /* Primary glassmorphism shadow */
+            backdrop-filter: blur(15px); /* MODIFIED: Frosted glass effect */
+            -webkit-backdrop-filter: blur(15px); /* Safari support */
+            border: 1px solid rgba(255, 255, 255, 0.18); /* MODIFIED: Lighter, more subtle border for glass effect */
             text-align: center;
-            max-width: 480px; /* Slightly increased max-width for more breathing room */
+            max-width: 500px; /* MODIFIED: Increased max-width for more presence */
             width: 90%; /* Responsive width */
             box-sizing: border-box; /* Include padding in width calculation */
             animation: fadeIn 0.8s ease-out; /* Simple fade-in animation */
@@ -47,48 +49,71 @@
         /* Heading styles */
         h1 {
             color: #2c3e50; /* Darker color for prominence */
-            /* MODIFIED: Larger font size, bolder weight, and more prominent text shadow */
-            font-size: 3em;
+            font-size: 3.2em; /* MODIFIED: Slightly larger font size for impact */
             font-weight: 800;
             margin-bottom: 15px;
-            letter-spacing: -0.8px; /* Slightly tighter letter spacing for impact */
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.08);
+            letter-spacing: -0.04em; /* Slightly tighter letter spacing for impact */
+            text-shadow: 0.5px 0.5px 2px rgba(0,0,0,0.03);
+            display: flex; /* Use flexbox for vertical alignment */
+            flex-direction: column; /* Stack items vertically */
+            align-items: center; /* Center items horizontally */
+            justify-content: center; /* Center items vertically */
+            gap: 8px; /* Consistent gap between flex items (the spans) */
+        }
+
+        /* Style for the "Welcome" and "PrivTalk" parts of the heading */
+        h1 span:not(.small-to) {
+            font-size: 1em; /* Inherit h1's font-size */
+            font-weight: inherit; /* Inherit h1's font-weight */
+            color: inherit; /* Inherit h1's color */
+            letter-spacing: inherit; /* Inherit h1's letter-spacing */
+            line-height: 1; /* Ensure tight line height for these spans */
+            margin: 0; /* Remove default margins */
+            padding: 0; /* Remove default padding */
+            display: block; /* Ensure they take their own line within flex */
+        }
+
+        /* Style for the smaller "to" in the heading */
+   .small-to {
+            font-size: 0.65em; /* Relative to parent h1's font-size (3.2em * 0.65 = 2.08em) */
+            font-weight: inherit; /* Inherit font weight from h1 */
+            color: inherit; /* Inherit color from h1 */
+            letter-spacing: inherit; /* Inherit letter spacing from h1 */
+            line-height: 1; /* Ensure tight line height for "to" itself */
+            margin: 0; /* Removed explicit margin to let gap handle spacing */
+            padding: 0; /* Remove default padding */
+            display: block; /* Ensure it takes its own line */
         }
 
         /* Paragraph styles for descriptive text */
         p {
-            /* MODIFIED: Slightly larger font size and increased line height for better readability and sophistication */
-            font-size: 1.2em;
+            font-size: 1.25em; /* MODIFIED: Slightly larger font size for better readability */
             color: #555;
-            margin-bottom: 30px;
+            margin-bottom: 35px; /* MODIFIED: Increased margin bottom */
             line-height: 1.9;
         }
 
         /* Button group layout */
-      .button-group {
+   .button-group {
             display: flex;
             flex-direction: column; /* Stack buttons vertically on small screens */
-            gap: 18px; /* Increased space between buttons */
+            gap: 20px; /* MODIFIED: Increased space between buttons */
             margin-top: 35px; /* Increased margin top */
         }
 
         /* Common styles for all CTA buttons */
-      .cta-button {
+   .cta-button {
             display: block; /* Make buttons take full width in column layout */
-            /* MODIFIED: Slightly larger padding for a more substantial feel */
-            padding: 16px 30px;
+            padding: 18px 35px; /* MODIFIED: Slightly larger padding for a more substantial feel */
             border: none;
-            /* MODIFIED: Slightly more rounded corners */
             border-radius: 10px;
-            /* MODIFIED: Slightly larger font size and bolder weight for button text */
-            font-size: 1.15em;
+            font-size: 1.2em; /* MODIFIED: Slightly larger font size for button text */
             font-weight: 700;
             cursor: pointer;
             text-decoration: none; /* Remove underline from anchor if used as button */
             transition: all 0.3s ease; /* Smooth transitions for hover/focus effects */
             text-align: center; /* Center text within button */
             box-sizing: border-box; /* Include padding in width */
-            /* MODIFIED: Increased letter spacing for sophistication */
             letter-spacing: 0.8px;
         }
 
@@ -101,18 +126,19 @@
 
         #registerBtn:hover {
             background-color: #0056b3; /* Darker blue on hover */
-            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4); /* More pronounced shadow on hover */
-            transform: translateY(-3px); /* Slightly more lift effect */
+            /* MODIFIED: More pronounced shadow and subtle scale on hover */
+            box-shadow: 0 12px 30px rgba(0, 123, 255, 0.5); /* Deeper, wider shadow */
+            transform: translateY(-5px) scale(1.02); /* More lift and scale effect */
         }
 
-        #registerBtn:focus {
+#registerBtn:focus {
             outline: 3px solid #0056b3; /* Thicker outline for accessibility */
             outline-offset: 4px;
         }
 
         #registerBtn:active {
             background-color: #004085; /* Even darker on active */
-            transform: translateY(0); /* Press effect */
+            transform: translateY(0) scale(1); /* Press effect */
             box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
         }
 
@@ -125,8 +151,9 @@
 
         #loginBtn:hover {
             background-color: #5a6268; /* Darker gray on hover */
-            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.4); /* More pronounced shadow on hover */
-            transform: translateY(-3px); /* Slightly more lift effect */
+            /* MODIFIED: More pronounced shadow and subtle scale on hover */
+            box-shadow: 0 12px 30px rgba(108, 117, 125, 0.5); /* Deeper, wider shadow */
+            transform: translateY(-5px) scale(1.02); /* More lift and scale effect */
         }
 
         #loginBtn:focus {
@@ -136,27 +163,31 @@
 
         #loginBtn:active {
             background-color: #495057; /* Even darker on active */
-            transform: translateY(0); /* Press effect */
+            transform: translateY(0) scale(1); /* Press effect */
             box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
         }
 
         /* Media query for larger screens to arrange buttons side-by-side */
         @media (min-width: 600px) {
-          .button-group {
+     .button-group {
                 flex-direction: row; /* Arrange buttons horizontally */
                 justify-content: center; /* Center buttons horizontally */
             }
-          .cta-button {
+     .cta-button {
                 width: auto; /* Allow buttons to size based on content */
-                min-width: 200px; /* Increased minimum width for consistent sizing */
+                min-width: 220px; /* MODIFIED: Increased minimum width for consistent sizing */
             }
         }
     </style>
 </head>
 <body>
     <div class="welcome-container">
-        <h1>Welcome to PrivTalk</h1>
-        <p>Your secure and private communication starts here. Join us or log in to continue your conversations.</p>
+        <h1>
+            <span>Welcome</span>
+            <span class="small-to">to</span>
+            <span>PrivTalk</span>
+        </h1>
+        <p>Your secure and private communication starts here.<br>Join us or log in to continue your conversations.</p>
         <div class="button-group">
             <button id="registerBtn" class="cta-button" onclick="location.href='/register'">
                 Create New Account
