@@ -1,6 +1,6 @@
 from fastapi import FastAPI # type: ignore
 from fastapi.middleware.cors import CORSMiddleware # type: ignore
-from app.routers import auth
+from app.routers import auth # type: ignore
 from fastapi.staticfiles import StaticFiles # type: ignore
 from fastapi import FastAPI, Request # type: ignore
 from fastapi.responses import HTMLResponse # type: ignore
@@ -17,7 +17,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
-app.mount("/static", StaticFiles(directory="static"), name="log")
+# app.mount("/static", StaticFiles(directory="static"), name="log")
 
 @app.get("/")
 def root():

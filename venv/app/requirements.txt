@@ -4,3 +4,5 @@ sqlalchemy
 pydantic
 email-validator
 python-dotenv
+jinja2
+python-multipart
