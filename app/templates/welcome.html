@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to PrivTalk</title>
+    <style>
+        /* Global Styles for a clean foundation */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure full viewport height */
+            /* MODIFIED: Gradient sky blue background */
+            background: linear-gradient(135deg, #e0f2f7 0%, #a7d9ed 100%); /* Light sky blue to a slightly deeper sky blue */
+            color: #333; /* Default text color */
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased; /* Smoother font rendering */
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Main container for centering content */
+      .welcome-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            /* MODIFIED: More pronounced and sophisticated soft shadow */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+            /* MODIFIED: Subtle border matching the new background tones */
+            border: 1px solid #cce7f0;
+            text-align: center;
+            max-width: 480px; /* Slightly increased max-width for more breathing room */
+            width: 90%; /* Responsive width */
+            box-sizing: border-box; /* Include padding in width calculation */
+            animation: fadeIn 0.8s ease-out; /* Simple fade-in animation */
+        }
+
+        /* Animation for the container */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Heading styles */
+        h1 {
+            color: #2c3e50; /* Darker color for prominence */
+            /* MODIFIED: Larger font size, bolder weight, and more prominent text shadow */
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            letter-spacing: -0.8px; /* Slightly tighter letter spacing for impact */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.08);
+        }
+
+        /* Paragraph styles for descriptive text */
+        p {
+            /* MODIFIED: Slightly larger font size and increased line height for better readability and sophistication */
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 30px;
+            line-height: 1.9;
+        }
+
+        /* Button group layout */
+      .button-group {
+            display: flex;
+            flex-direction: column; /* Stack buttons vertically on small screens */
+            gap: 18px; /* Increased space between buttons */
+            margin-top: 35px; /* Increased margin top */
+        }
+
+        /* Common styles for all CTA buttons */
+      .cta-button {
+            display: block; /* Make buttons take full width in column layout */
+            /* MODIFIED: Slightly larger padding for a more substantial feel */
+            padding: 16px 30px;
+            border: none;
+            /* MODIFIED: Slightly more rounded corners */
+            border-radius: 10px;
+            /* MODIFIED: Slightly larger font size and bolder weight for button text */
+            font-size: 1.15em;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none; /* Remove underline from anchor if used as button */
+            transition: all 0.3s ease; /* Smooth transitions for hover/focus effects */
+            text-align: center; /* Center text within button */
+            box-sizing: border-box; /* Include padding in width */
+            /* MODIFIED: Increased letter spacing for sophistication */
+            letter-spacing: 0.8px;
+        }
+
+        /* Specific style for the Register button (Primary CTA) */
+        #registerBtn {
+            background-color: #007bff; /* A vibrant blue */
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+        }
+
+        #registerBtn:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4); /* More pronounced shadow on hover */
+            transform: translateY(-3px); /* Slightly more lift effect */
+        }
+
+        #registerBtn:focus {
+            outline: 3px solid #0056b3; /* Thicker outline for accessibility */
+            outline-offset: 4px;
+        }
+
+        #registerBtn:active {
+            background-color: #004085; /* Even darker on active */
+            transform: translateY(0); /* Press effect */
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+        }
+
+        /* Specific style for the Login button (Secondary CTA) */
+        #loginBtn {
+            background-color: #6c757d; /* A neutral gray */
+            color: white;
+            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
+        }
+
+        #loginBtn:hover {
+            background-color: #5a6268; /* Darker gray on hover */
+            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.4); /* More pronounced shadow on hover */
+            transform: translateY(-3px); /* Slightly more lift effect */
+        }
+
+        #loginBtn:focus {
+            outline: 3px solid #5a6268; /* Thicker outline for accessibility */
+            outline-offset: 4px;
+        }
+
+        #loginBtn:active {
+            background-color: #495057; /* Even darker on active */
+            transform: translateY(0); /* Press effect */
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+        }
+
+        /* Media query for larger screens to arrange buttons side-by-side */
+        @media (min-width: 600px) {
+          .button-group {
+                flex-direction: row; /* Arrange buttons horizontally */
+                justify-content: center; /* Center buttons horizontally */
+            }
+          .cta-button {
+                width: auto; /* Allow buttons to size based on content */
+                min-width: 200px; /* Increased minimum width for consistent sizing */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <h1>Welcome to PrivTalk</h1>
+        <p>Your secure and private communication starts here. Join us or log in to continue your conversations.</p>
+        <div class="button-group">
+            <button id="registerBtn" class="cta-button" onclick="location.href='/register'">
+                Create New Account
+            </button>
+            <button id="loginBtn" class="cta-button" onclick="location.href='/login'">
+                Already Have an Account? Log In
+            </button>
+        </div>
+    </div>
+</body>
+</html>

@@ -19,14 +19,14 @@ app.add_middleware(
 app.include_router(auth.router)
 # app.mount("/static", StaticFiles(directory="app/static"), name="log")
 
-@app.get("/")
-def root():
-    return {"message": "Welcome to PrivTalk FastAPI backend"}
-
 # Template engine setup
 templates = Jinja2Templates(directory="app/templates")
 
-# Serve login.html
-@app.get("/login", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse)
+def root(request: Request):
+    return templates.TemplateResponse("welcome.html", {"request": request})
+
+# Serve register.html
+@app.get("/register", response_class=HTMLResponse)
 def serve_login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse("register.html", {"request": request})
