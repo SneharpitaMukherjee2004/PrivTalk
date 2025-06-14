@@ -1,8 +1,28 @@
+#email_service.py
+from app.database import SessionLocal
+from app.models.token import VerificationToken
 import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
+def send_verification_email(email: str, token: str, password: str,username:str):
+    db = SessionLocal()
 
-def send_verification_email(email: str, token: str):
+    existing = db.query(VerificationToken).filter_by(email=email).first()
+    if existing:
+        db.delete(existing)
+        db.commit()
+
+    new_entry = VerificationToken(
+        email=email,
+        username=username,
+        password=password,
+        token=token,
+        is_verified=False,
+        
+    )
+    db.add(new_entry)
+    db.commit()
+
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     link = f"http://localhost:8000/verify-email?token={token}"
 
@@ -37,4 +57,5 @@ def send_verification_email(email: str, token: str):
             print(f"[SUCCESS] Email sent to {email}")
     except Exception as e:
         print(f"[ERROR] Failed to send email: {e}")
+        traceback.print_exc()
         raise Exception(f"Error sending email: {e}")

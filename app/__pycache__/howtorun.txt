@@ -1,3 +1,0 @@
-1. after entering venv ,enter into PRIVTALK
-RUN THE FOLLOWING COMMAND IN TERMINAL 
- uvicorn app.main:app --reload --port 8000

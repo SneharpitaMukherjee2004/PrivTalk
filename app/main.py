@@ -30,3 +30,8 @@ def root(request: Request):
 @app.get("/register", response_class=HTMLResponse)
 def serve_login(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
+
+#databaseconnection
+from app.database import Base, engine
+from app.models.token import VerificationToken
+Base.metadata.create_all(bind=engine)

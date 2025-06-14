@@ -205,28 +205,30 @@ body {
     }
 
  </style>
+<script>
+function sendVerification(event) {
+    event?.preventDefault();
 
-  <script>
-    function sendVerification(event) {
-      event?.preventDefault();
-      const email = document.getElementById("email").value;
+    const username = document.getElementById("username").value; // ✅ Get username
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-      fetch("http://localhost:8000/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      })
-        .then((response) => {
-          if (!response.ok) throw new Error("Network response was not ok");
-          return response.json();
-        })
-        .then((data) => alert(data.message))
-        .catch((error) => {
-          console.error("Error:", error);
-          alert("Error sending verification email");
-        });
-    }
-  </script>
+    fetch("http://localhost:8000/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password }), // ✅ Include username
+    })  
+    .then((response) => {
+        if (!response.ok) throw new Error("Network response was not ok");
+        return response.json();
+    })
+    .then((data) => alert(data.message))
+    .catch((error) => {
+        console.error("Error:", error);
+        alert("Error sending verification email");
+    });
+}
+</script>
 </head>
 <body>
   <div class="wrapper">
