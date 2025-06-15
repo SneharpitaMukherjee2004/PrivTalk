@@ -17,7 +17,9 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
-# app.mount("/static", StaticFiles(directory="app/static"), name="log")
+
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 
 # Template engine setup
 templates = Jinja2Templates(directory="app/templates")
