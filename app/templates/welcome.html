@@ -204,7 +204,9 @@
 
     .cta-button:hover { /* Matched register.html button hover effect */
             background: linear-gradient(to right, #5a67d8, #6b46c1);
-            transform: translateY(-1px);
+            background-color: #e0a800; /* Darker yellow/orange on hover */
+            box-shadow: 0 12px 30px rgba(255, 193, 7, 0.5); /* Deeper, wider shadow */
+            transform: translateY(-5px) scale(1.02); /* More lift and scale effect */
         }
 
         /* Media query for larger screens to arrange buttons side-by-side */
@@ -243,7 +245,7 @@
                     Create New Account
                 </button>
                 <button id="loginBtn" class="cta-button" onclick="location.href='/login'">
-                    Already Have an Account? Log In
+                    Have an Account?<br>Log In
                 </button>
             </div>
             <div class="footer">PrivTalk &copy; 2025</div>
