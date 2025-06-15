@@ -40,7 +40,7 @@ def verify_token(token: str, request: Request):
             raise HTTPException(status_code=404, detail="Invalid or expired token.")
 
         if token_entry.is_verified:
-            return RedirectResponse(url="/login")
+            return RedirectResponse(url="/login") # type: ignore
 
         token_entry.is_verified = True
         db.commit()
@@ -55,7 +55,7 @@ def verify_token(token: str, request: Request):
         db.add(new_user)
         db.commit()
 
-        return RedirectResponse(url="/login")
+        return RedirectResponse(url="/login") # type: ignore
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Verification failed: {e}")
     finally:

@@ -17,7 +17,7 @@ def send_verification_email(email: str, token: str, password: str,username:str):
         username=username,
         password=password,
         token=token,
-        is_verified=False,
+        is_verified=False
         
     )
     db.add(new_entry)
@@ -57,5 +57,5 @@ def send_verification_email(email: str, token: str, password: str,username:str):
             print(f"[SUCCESS] Email sent to {email}")
     except Exception as e:
         print(f"[ERROR] Failed to send email: {e}")
-        traceback.print_exc()
+        traceback.print_exc() # type: ignore
         raise Exception(f"Error sending email: {e}")

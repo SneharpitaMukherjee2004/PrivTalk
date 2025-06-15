@@ -31,6 +31,16 @@ def root(request: Request):
 def serve_login(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
+# Serve login.html
+@app.get("/login", response_class=HTMLResponse)
+def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+# Serve forgot_password.html page
+@app.get("/forgot-password", response_class=HTMLResponse)
+def forgot_password_page(request: Request):
+    return templates.TemplateResponse("forgot_password.html", {"request": request})
+
 #databaseconnection
 from app.database import Base, engine
 from app.models.token import VerificationToken

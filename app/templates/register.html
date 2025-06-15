@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login - PrivTalk</title>
+  <title>Sign-Up to PrivTalk</title>
 <style>
-  
+
 * {
       box-sizing: border-box;
     }
@@ -20,15 +20,16 @@ body {
       width: 100%;
     }
 
-    .wrapper {
+.wrapper {
       position: relative;
-      padding-top: 50px;
+      padding-top: 120px; /* Space for the logo */
       width: 100%;
       display: flex;
       justify-content: center;
+      margin-top: -40px; /* Adjusted to lift slightly, but less than before */
     }
 
-    .login-container {
+.login-container {
       background: #ffffff;
       padding: 4rem 2.5rem 3rem;
       border-radius: 16px;
@@ -41,7 +42,7 @@ body {
       animation: fade-in 0.6s ease-out;
     }
 
-    .login-container::before {
+.login-container::before {
       content: "";
       position: absolute;
       top: 0;
@@ -64,9 +65,9 @@ body {
       }
     }
 
-    .logo-circle {
+.logo-circle {
       position: absolute;
-      top: -35px;
+      top: 50px; /* Positions the logo within the padding-top of the wrapper */
       left: 50%;
       transform: translateX(-50%);
       background: linear-gradient(to right, #667eea, #764ba2);
@@ -84,7 +85,7 @@ body {
       z-index: 10;
     }
 
-        .login-container h1{
+    .login-container h1{
       text-align: center;
       margin-bottom: 32px;
       margin-top: 12px;
@@ -96,7 +97,7 @@ body {
       -webkit-text-fill-color: transparent;
       text-shadow: 0 2px 4px rgba(122, 122, 122, 0.2);
     }
-    .login-container h2 {
+.login-container h2 {
       text-align: center;
       margin-bottom: 32px;
       margin-top: 12px;
@@ -109,12 +110,12 @@ body {
       text-shadow: 0 2px 4px rgba(122, 122, 122, 0.2);
     }
 
-    .form-group {
+.form-group {
       position: relative;
       margin-bottom: 28px;
     }
 
-    .form-group input {
+.form-group input {
       width: 100%;
       padding: 16px 14px 14px;
       border: 1px solid #cbd5e0;
@@ -125,14 +126,14 @@ body {
       transition: all 0.25s ease;
     }
 
-    .form-group input:focus {
+.form-group input:focus {
       border-color: #7f9cf5;
       box-shadow: 0 0 8px rgba(127, 156, 245, 0.3);
       background-color: #ffffff;
       outline: none;
     }
 
-    .form-group label {
+.form-group label {
       position: absolute;
       top: 50%;
       left: 16px;
@@ -145,8 +146,8 @@ body {
       transition: 0.2s ease all;
     }
 
-    .form-group input:focus + label,
-    .form-group input:not(:placeholder-shown) + label {
+.form-group input:focus + label,
+.form-group input:not(:placeholder-shown) + label {
       top: -10px;
       font-size: 12px;
       color: #5a67d8;
@@ -197,33 +198,53 @@ body {
       transform: translateY(-1px);
     }
 
-    .footer {
+.footer {
       margin-top: 28px;
       text-align: center;
       font-size: 0.95rem;
       color: #718096;
     }
 
- </style>
+    /* NEW: Style for the "Have an account? Login" link */
+.auth-switch-link {
+        margin-top: 20px; /* Space above the link */
+        text-align: center;
+        font-size: 0.95rem;
+        color: #718096;
+    }
+
+.auth-switch-link a {
+        color: #5a67d8; /* A color that stands out but matches the gradient */
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+.auth-switch-link a:hover {
+        color: #6b46c1; /* Darker shade on hover */
+        text-decoration: underline;
+    }
+
+  </style>
 <script>
 function sendVerification(event) {
     event?.preventDefault();
 
-    const username = document.getElementById("username").value; // ✅ Get username
+    const username = document.getElementById("username").value;
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
     fetch("http://localhost:8000/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, email, password }), // ✅ Include username
-    })  
-    .then((response) => {
+      body: JSON.stringify({ username, email, password }),
+    })
+.then((response) => {
         if (!response.ok) throw new Error("Network response was not ok");
         return response.json();
     })
-    .then((data) => alert(data.message))
-    .catch((error) => {
+.then((data) => alert(data.message))
+.catch((error) => {
         console.error("Error:", error);
         alert("Error sending verification email");
     });
@@ -253,8 +274,11 @@ function sendVerification(event) {
         </div>
 
         <button type="button" onclick="sendVerification(event)">Send Verification Link</button>
-        
+
       </form>
+      <div class="auth-switch-link">
+          Have an account? <a href="/login">Login</a>
+      </div>
       <div class="footer">PrivTalk &copy; 2025</div>
     </div>
   </div>

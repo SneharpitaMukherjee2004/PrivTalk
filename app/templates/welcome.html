@@ -3,198 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to PrivTalk</title>
+    <title>PrivTalk</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* Global Styles for a clean foundation */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Matched register.html font */
+            background: linear-gradient(to bottom right, #f3f4f6, #95b6e0); /* Matched register.html background */
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Ensure full viewport height */
-            /* MODIFIED: More vibrant and dynamic sky blue gradient background */
-            background: linear-gradient(135deg, #a8dadc 0%, #457b9d 100%); /* A more sophisticated blue gradient */
-            color: #333; /* Default text color */
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased; /* Smoother font rendering */
+            height: 100vh;
+            width: 100%;
+            -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Main container for centering content */
-   .welcome-container {
-            background-color: rgba(255, 255, 255, 0.9); /* MODIFIED: Semi-transparent white for glassmorphism */
-            padding: 40px;
-            border-radius: 16px; /* MODIFIED: Slightly more rounded corners */
-            /* MODIFIED: Glassmorphism-style shadow and border */
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); /* Primary glassmorphism shadow */
-            backdrop-filter: blur(15px); /* MODIFIED: Frosted glass effect */
-            -webkit-backdrop-filter: blur(15px); /* Safari support */
-            border: 1px solid rgba(255, 255, 255, 0.18); /* MODIFIED: Lighter, more subtle border for glass effect */
-            text-align: center;
-            max-width: 500px; /* MODIFIED: Increased max-width for more presence */
-            width: 90%; /* Responsive width */
-            box-sizing: border-box; /* Include padding in width calculation */
-            animation: fadeIn 0.8s ease-out; /* Simple fade-in animation */
+        /* Wrapper for the container and logo circle */
+    .wrapper {
+            position: relative;
+            padding-top: 120px; /* Space for the logo circle to sit above */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: -40px; /* Lifts the entire container slightly up, consistent with register.html */
+        }
+
+        /* Main container for content - renamed to match register.html's.login-container for consistency */
+    .login-container { /* Renamed from.welcome-container for consistency */
+            background: #ffffff; /* Solid white, consistent with register.html */
+            padding: 4rem 2.5rem 3rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 55px rgba(0, 0, 0, 0.12);
+            border: 1px solid #e0e0e0;
+            width: 100%;
+            max-width: 500px;
+            min-width: 320px;
+            position: relative;
+            animation: fade-in 0.6s ease-out;
+            text-align: center; /* Keep for general content alignment */
+        }
+
+        /* Top gradient bar for the container */
+    .login-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
         }
 
         /* Animation for the container */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Heading styles */
-        h1 {
-            color: #2c3e50; /* Darker color for prominence */
-            font-size: 3.2em; /* MODIFIED: Slightly larger font size for impact */
-            font-weight: 800;
-            margin-bottom: 15px;
-            letter-spacing: -0.04em; /* Slightly tighter letter spacing for impact */
-            text-shadow: 0.5px 0.5px 2px rgba(0,0,0,0.03);
-            display: flex; /* Use flexbox for vertical alignment */
-            flex-direction: column; /* Stack items vertically */
-            align-items: center; /* Center items horizontally */
-            justify-content: center; /* Center items vertically */
-            gap: 8px; /* Consistent gap between flex items (the spans) */
+        /* Logo circle styling */
+    .logo-circle {
+            position: absolute;
+            top: 50px; /* Positions the logo fully visible within the wrapper's padding-top */
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to right, #667eea, #764ba2);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 28px;
+            border: 4px solid white;
+            z-index: 10;
         }
 
-        /* Style for the "Welcome" and "PrivTalk" parts of the heading */
-        h1 span:not(.small-to) {
-            font-size: 1em; /* Inherit h1's font-size */
-            font-weight: inherit; /* Inherit h1's font-weight */
-            color: inherit; /* Inherit h1's color */
-            letter-spacing: inherit; /* Inherit h1's letter-spacing */
-            line-height: 1; /* Ensure tight line height for these spans */
-            margin: 0; /* Remove default margins */
-            padding: 0; /* Remove default padding */
-            display: block; /* Ensure they take their own line within flex */
+        /* Heading container for flex layout */
+        h1 {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px; /* Consistent with register.html heading margins */
+        }
+
+        /* Style for the "Welcome" part of the heading */
+    .welcome-text {
+            font-size: 32px; /* Enlarged from 26px */
+            font-weight: 700;
+            letter-spacing: 0.7px;
+            background: linear-gradient(to right, #5a67d8, #764ba2); /* Matches register.html h2 gradient */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(122, 122, 122, 0.2);
+            display: block;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
         }
 
         /* Style for the smaller "to" in the heading */
-   .small-to {
-            font-size: 0.65em; /* Relative to parent h1's font-size (3.2em * 0.65 = 2.08em) */
-            font-weight: inherit; /* Inherit font weight from h1 */
-            color: inherit; /* Inherit color from h1 */
-            letter-spacing: inherit; /* Inherit letter spacing from h1 */
-            line-height: 1; /* Ensure tight line height for "to" itself */
-            margin: 0; /* Removed explicit margin to let gap handle spacing */
-            padding: 0; /* Remove default padding */
-            display: block; /* Ensure it takes its own line */
+    .small-to {
+            font-size: 0.75em; /* Enlarged relative to its parent's font size (32px * 0.75 = 24px) */
+            font-weight: inherit;
+            background: linear-gradient(to right, #5a67d8, #764ba2); /* Inherit gradient from welcome-text */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(122, 122, 122, 0.2);
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+            display: block;
+        }
+
+        /* Style for the "PrivTalk" part of the heading */
+    .privtalk-text {
+            font-size: 40px; /* Matches register.html h1 font-size */
+            font-weight: 700;
+            letter-spacing: 0.7px;
+            background: linear-gradient(to right,rgb(132, 11, 11), #764ba2); /* Matches register.html h1 gradient */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(122, 122, 122, 0.2);
+            display: block;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
         }
 
         /* Paragraph styles for descriptive text */
         p {
-            font-size: 1.25em; /* MODIFIED: Slightly larger font size for better readability */
+            font-size: 1.25em;
             color: #555;
-            margin-bottom: 35px; /* MODIFIED: Increased margin bottom */
+            margin-bottom: 35px;
             line-height: 1.9;
         }
 
         /* Button group layout */
-   .button-group {
+    .button-group {
             display: flex;
-            flex-direction: column; /* Stack buttons vertically on small screens */
-            gap: 20px; /* MODIFIED: Increased space between buttons */
-            margin-top: 35px; /* Increased margin top */
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 35px;
         }
 
-        /* Common styles for all CTA buttons */
-   .cta-button {
-            display: block; /* Make buttons take full width in column layout */
-            padding: 18px 35px; /* MODIFIED: Slightly larger padding for a more substantial feel */
+        /* Common styles for all CTA buttons, matched to register.html button style */
+    .cta-button {
+            display: block;
+            width: 100%; /* Full width in column layout */
+            padding: 14px; /* Kept original padding */
             border: none;
-            border-radius: 10px;
-            font-size: 1.2em; /* MODIFIED: Slightly larger font size for button text */
-            font-weight: 700;
+            border-radius: 8px; /* Matched register.html button border-radius */
+            font-size: 18px; /* INCREASED FONT SIZE HERE */
+            font-weight: 600; /* Matched register.html button font-weight */
             cursor: pointer;
-            text-decoration: none; /* Remove underline from anchor if used as button */
-            transition: all 0.3s ease; /* Smooth transitions for hover/focus effects */
-            text-align: center; /* Center text within button */
-            box-sizing: border-box; /* Include padding in width */
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-sizing: border-box;
             letter-spacing: 0.8px;
-        }
-
-        /* Specific style for the Register button (Primary CTA) */
-        #registerBtn {
-            background-color: #007bff; /* A vibrant blue */
+            margin-top: 10px; /* Matched register.html button margin-top */
+            background: linear-gradient(to right, #667eea, #764ba2); /* Matched register.html button background */
             color: white;
-            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
         }
 
-        #registerBtn:hover {
-            background-color: #0056b3; /* Darker blue on hover */
-            /* MODIFIED: More pronounced shadow and subtle scale on hover */
-            box-shadow: 0 12px 30px rgba(0, 123, 255, 0.5); /* Deeper, wider shadow */
-            transform: translateY(-5px) scale(1.02); /* More lift and scale effect */
+    .cta-button::before { /* Matched register.html button hover effect */
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -75%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: skewX(-20deg);
+            transition: left 0.4s;
+            z-index: 0;
         }
 
-#registerBtn:focus {
-            outline: 3px solid #0056b3; /* Thicker outline for accessibility */
-            outline-offset: 4px;
+    .cta-button:hover::before { /* Matched register.html button hover effect */
+            left: 130%;
         }
 
-        #registerBtn:active {
-            background-color: #004085; /* Even darker on active */
-            transform: translateY(0) scale(1); /* Press effect */
-            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
-        }
-
-        /* Specific style for the Login button (Secondary CTA) */
-        #loginBtn {
-            background-color: #6c757d; /* A neutral gray */
-            color: white;
-            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
-        }
-
-        #loginBtn:hover {
-            background-color: #5a6268; /* Darker gray on hover */
-            /* MODIFIED: More pronounced shadow and subtle scale on hover */
-            box-shadow: 0 12px 30px rgba(108, 117, 125, 0.5); /* Deeper, wider shadow */
-            transform: translateY(-5px) scale(1.02); /* More lift and scale effect */
-        }
-
-        #loginBtn:focus {
-            outline: 3px solid #5a6268; /* Thicker outline for accessibility */
-            outline-offset: 4px;
-        }
-
-        #loginBtn:active {
-            background-color: #495057; /* Even darker on active */
-            transform: translateY(0) scale(1); /* Press effect */
-            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+    .cta-button:hover { /* Matched register.html button hover effect */
+            background: linear-gradient(to right, #5a67d8, #6b46c1);
+            transform: translateY(-1px);
         }
 
         /* Media query for larger screens to arrange buttons side-by-side */
         @media (min-width: 600px) {
-     .button-group {
-                flex-direction: row; /* Arrange buttons horizontally */
-                justify-content: center; /* Center buttons horizontally */
+        .button-group {
+                flex-direction: row;
+                justify-content: center;
             }
-     .cta-button {
-                width: auto; /* Allow buttons to size based on content */
-                min-width: 220px; /* MODIFIED: Increased minimum width for consistent sizing */
+        .cta-button {
+                width: auto;
+                min-width: 220px; /* Kept original min-width */
             }
+        }
+
+        /* Footer style, consistent with register.html */
+    .footer {
+            margin-top: 28px;
+            text-align: center;
+            font-size: 0.95rem;
+            color: #718096;
         }
     </style>
 </head>
 <body>
-    <div class="welcome-container">
-        <h1>
-            <span>Welcome</span>
-            <span class="small-to">to</span>
-            <span>PrivTalk</span>
-        </h1>
-        <p>Your secure and private communication starts here.<br>Join us or log in to continue your conversations.</p>
-        <div class="button-group">
-            <button id="registerBtn" class="cta-button" onclick="location.href='/register'">
-                Create New Account
-            </button>
-            <button id="loginBtn" class="cta-button" onclick="location.href='/login'">
-                Already Have an Account? Log In
-            </button>
+    <div class="wrapper">
+        <div class="logo-circle">P</div>
+        <div class="login-container">
+            <h1>
+                <span class="welcome-text">Welcome</span>
+                <span class="small-to">to</span>
+                <span class="privtalk-text">PrivTalk</span>
+            </h1>
+            <p>Your secure and private communication starts here.<br>Join us or log in to continue your conversations.</p>
+            <div class="button-group">
+                <button id="registerBtn" class="cta-button" onclick="location.href='/register'">
+                    Create New Account
+                </button>
+                <button id="loginBtn" class="cta-button" onclick="location.href='/login'">
+                    Already Have an Account? Log In
+                </button>
+            </div>
+            <div class="footer">PrivTalk &copy; 2025</div>
         </div>
     </div>
 </body>
