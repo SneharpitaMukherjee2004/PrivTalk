@@ -272,6 +272,42 @@
         }
     </style>
 </head>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const emailOrUsername = document.getElementById('username-email').value.trim();
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch("http://localhost:8000/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    identifier: emailOrUsername,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert("Login successful!");
+                    window.location.href = `/profile?email=${data.email}&token=${data.chat_token}& username=${data.username}`;
+;
+            } else {
+                alert(data.message || "Login failed.");
+            }
+        } catch (err) {
+            console.error("Login error:", err);
+            alert("An error occurred. Please try again.");
+        }
+    });
+});
+</script>
+
+
 <body>
     <div class="wrapper">
         <div class="logo-circle">P</div>

@@ -42,6 +42,16 @@ def login_page(request: Request):
 @app.get("/forgot-password", response_class=HTMLResponse)
 def forgot_password_page(request: Request):
     return templates.TemplateResponse("forgot_password.html", {"request": request})
+#profilepage
+@app.get("/profile", response_class=HTMLResponse)
+async def serve_profile(request: Request, email: str, token: str,username: str):
+    return templates.TemplateResponse("profile.html", {
+        "request": request,
+        "email": email,
+        "token": token,
+        "username": username
+    })
+
 
 #databaseconnection
 from app.database import Base, engine

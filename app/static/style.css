@@ -1,0 +1,148 @@
+/* =================== Global Theme =================== */
+body {
+  margin: 0;
+  padding: 2rem;
+  background-color: #210864;
+  color: #f1f1f1;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+  max-width: 700px;
+  margin: auto;
+  background: #1c1f24;
+  padding: 2rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.4);
+}
+
+/* =================== Headings =================== */
+h1, h2, h3 {
+  color: #ffffff;
+  margin-bottom: 1.2rem;
+}
+
+h2 {
+  font-size: 1.8rem;
+}
+
+/* =================== Input Fields =================== */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 0.3rem;
+  margin-bottom: 1.2rem;
+  background-color: #2c3038;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+input[readonly] {
+  cursor: default;
+}
+
+/* =================== Labels =================== */
+label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  display: block;
+  color: #ccc;
+}
+
+/* =================== Buttons =================== */
+button {
+  padding: 0.7rem 1.3rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.copy-btn {
+  background-color: #007bff;
+  color: #fff;
+  margin-top: 0.3rem;
+}
+
+.copy-btn:hover {
+  background-color: #0069d9;
+}
+
+.edit-btn {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.edit-btn:hover {
+  background-color: #218838;
+}
+
+.connect-btn {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.connect-btn:hover {
+  background-color: #e0a800;
+}
+
+/* =================== Layout Helpers =================== */
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* =================== Toast / Alert Style =================== */
+.alert {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  background-color: #222;
+  color: #f1f1f1;
+  font-size: 0.95rem;
+}
+
+/* =================== Responsive =================== */
+@media (max-width: 600px) {
+  .container {
+    padding: 1.5rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+}
+.profile-container {
+  padding: 2rem;
+  background: #1c1f24;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+.app_name{
+  text-align: center;
+  font-weight: bold;
+}
+.header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  background-color: #218838;
+}

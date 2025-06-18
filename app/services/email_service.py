@@ -4,6 +4,16 @@ from app.models.token import VerificationToken
 import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
+
+
+
+
+
+
+def send_reset_password(email:str,token:str):
+    #logic of sending forgotpasswordmail
+    return
+    
 def send_verification_email(email: str, token: str, password: str,username:str):
     db = SessionLocal()
 

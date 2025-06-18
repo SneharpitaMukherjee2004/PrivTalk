@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile | PrivTalk</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="icon" type="image/png" href="/static/icon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<div class="header">
+<h1 class="app_name">PrivTalk</h1>
+<h2 class="customer_msg">Welcome, {{ username }}</h2>
+
+
+</div>
+
+  <main class="container">
+    <div class="profile-container">
+      <h2>👤 My Profile</h2>
+
+      <div class="profile-field">
+        <label>Username</label>
+        <input type="text" value="{{ username }}" readonly>
+      </div>
+
+      <div class="profile-field">
+        <label>Email</label>
+        <input type="text" value= "{{ email }}" readonly>
+      </div>
+
+      <div class="profile-field">
+        <label>Chat Token</label>
+        <input type="text" id="chatToken" value="{{ token }}" readonly>
+        <button class="copy-btn" onclick="copyToken()">Copy Token</button>
+        <span id="copyFeedback" style="color: lightgreen; display: none; font-size: 0.9rem;">Copied!</span>
+      </div>
+
+      <div class="action-buttons">
+        <button class="edit-btn" onclick="window.location.href='/edit-profile'">Edit Profile</button>
+        <button class="connect-btn" onclick="window.location.href='/connect'">Connect with Token</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function copyToken() {
+      const tokenInput = document.getElementById("chatToken");
+      tokenInput.select();
+      tokenInput.setSelectionRange(0, 99999); // For mobile
+      navigator.clipboard.writeText(tokenInput.value)
+        .then(() => {
+          const feedback = document.getElementById("copyFeedback");
+          feedback.style.display = "inline";
+          setTimeout(() => feedback.style.display = "none", 2000);
+        })
+        .catch(err => alert("Failed to copy token."));
+    }
+  </script>
+</body>
+</html>
