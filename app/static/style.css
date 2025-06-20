@@ -1,93 +1,131 @@
-/* =================== Global Theme =================== */
+/* ========== Animated Background ========== */
 body {
   margin: 0;
   padding: 2rem;
-  background-color: #210864;
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(-45deg, #04d9a0, #4287f5, #7f3fbf, #04d9a0);
+  background-size: 400% 400%;
+  animation: animatedGradient 15s ease infinite;
   color: #f1f1f1;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+@keyframes animatedGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ========== Container ========== */
 .container {
   max-width: 700px;
   margin: auto;
-  background: #1c1f24;
-  padding: 2rem 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.25);
+  padding: 2.5rem;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+  animation: softPulse 4s ease-in-out infinite;
 }
 
-/* =================== Headings =================== */
-h1, h2, h3 {
-  color: #ffffff;
-  margin-bottom: 1.2rem;
+@keyframes softPulse {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 45px rgba(255, 255, 255, 0.4);
+  }
 }
 
-h2 {
-  font-size: 1.8rem;
-}
-
-/* =================== Input Fields =================== */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-textarea {
+/* ========== Header ========== */
+.header {
   width: 100%;
-  padding: 0.8rem;
-  margin-top: 0.3rem;
-  margin-bottom: 1.2rem;
-  background-color: #2c3038;
+  background-color: rgba(0, 128, 96, 0.9); /* greenish tone */
+  padding: 1rem 2rem; /* top-bottom: 1rem, left-right: 2rem */
+  border-bottom: 3px solid #0000003d;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+}
+
+.app_name {
+  font-size: 2rem;
+  font-weight: 800;
   color: #fff;
-  border: 1px solid #444;
-  border-radius: 6px;
-  font-size: 1rem;
-  box-sizing: border-box;
+  text-align: center;
+  margin: 0;
 }
 
-input[readonly] {
-  cursor: default;
+
+/* ========== Greeting ========== */
+.customer_msg {
+  font-size: 1.3rem;
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-/* =================== Labels =================== */
+/* ========== Profile Section ========== */
+.profile-container {
+  background: rgba(37, 69, 125, 0.85);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+}
+
+/* ========== Form Fields ========== */
+.profile-field {
+  margin-bottom: 1.5rem;
+}
+
 label {
   font-weight: 600;
-  margin-bottom: 0.4rem;
   display: block;
-  color: #ccc;
+  margin-bottom: 0.5rem;
+  color: #e0e0e0;
 }
 
-/* =================== Buttons =================== */
+input[type="text"] {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #2c2f33;
+  color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* ========== Buttons ========== */
 button {
   padding: 0.7rem 1.3rem;
-  border: none;
-  border-radius: 6px;
   font-size: 1rem;
-  cursor: pointer;
   font-weight: 600;
-  transition: background 0.3s ease;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
 
 .copy-btn {
-  background-color: #007bff;
-  color: #fff;
-  margin-top: 0.3rem;
+  background-color: #06d6a0;
+  color: #000;
+  margin-top: 0.4rem;
 }
 
 .copy-btn:hover {
-  background-color: #0069d9;
+  background-color: #05c693;
 }
 
 .edit-btn {
-  background-color: #28a745;
+  background-color: #00bcd4;
   color: #fff;
 }
 
 .edit-btn:hover {
-  background-color: #218838;
+  background-color: #00acc1;
 }
 
 .connect-btn {
@@ -96,10 +134,10 @@ button:disabled {
 }
 
 .connect-btn:hover {
-  background-color: #e0a800;
+  background-color: #ffb300;
 }
 
-/* =================== Layout Helpers =================== */
+/* ========== Action Layout ========== */
 .action-buttons {
   display: flex;
   justify-content: space-between;
@@ -108,17 +146,14 @@ button:disabled {
   margin-top: 2rem;
 }
 
-/* =================== Toast / Alert Style =================== */
-.alert {
-  padding: 1rem;
-  margin: 1rem 0;
-  border-radius: 8px;
-  background-color: #222;
-  color: #f1f1f1;
-  font-size: 0.95rem;
+/* ========== Feedback Text ========== */
+#copyFeedback {
+  color: lightgreen;
+  display: none;
+  font-size: 0.9rem;
 }
 
-/* =================== Responsive =================== */
+/* ========== Responsive ========== */
 @media (max-width: 600px) {
   .container {
     padding: 1.5rem;
@@ -128,21 +163,4 @@ button:disabled {
     flex-direction: column;
     gap: 0.8rem;
   }
-}
-.profile-container {
-  padding: 2rem;
-  background: #1c1f24;
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
-}
-.app_name{
-  text-align: center;
-  font-weight: bold;
-}
-.header{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60px;
-  background-color: #218838;
 }
