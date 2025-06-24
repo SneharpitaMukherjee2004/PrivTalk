@@ -5,7 +5,6 @@
   <title>Sign-Up to PrivTalk</title>
   <link rel="icon" type="image/png" href="/static/icon.png">
 <style>
-
 * {
       box-sizing: border-box;
     }
@@ -23,11 +22,11 @@ body {
 
 .wrapper {
       position: relative;
-      padding-top: 120px; /* Space for the logo */
+      padding-top: 120px;
       width: 100%;
       display: flex;
       justify-content: center;
-      margin-top: -40px; /* Adjusted to lift slightly, but less than before */
+      margin-top: -40px;
     }
 
 .login-container {
@@ -55,20 +54,14 @@ body {
       border-top-right-radius: 16px;
     }
 
-    @keyframes fade-in {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 .logo-circle {
       position: absolute;
-      top: 50px; /* Positions the logo within the padding-top of the wrapper */
+      top: 50px;
       left: 50%;
       transform: translateX(-50%);
       background: linear-gradient(to right, #667eea, #764ba2);
@@ -86,7 +79,7 @@ body {
       z-index: 10;
     }
 
-    .login-container h1{
+.login-container h1 {
       text-align: center;
       margin-bottom: 32px;
       margin-top: 12px;
@@ -98,6 +91,7 @@ body {
       -webkit-text-fill-color: transparent;
       text-shadow: 0 2px 4px rgba(122, 122, 122, 0.2);
     }
+
 .login-container h2 {
       text-align: center;
       margin-bottom: 32px;
@@ -154,12 +148,11 @@ body {
       color: #5a67d8;
     }
 
-    input::placeholder {
-      color: rgba(255, 255, 255, 0) ;
-
+input::placeholder {
+      color: rgba(255, 255, 255, 0);
     }
 
-    button {
+button {
       width: 100%;
       padding: 14px;
       background: linear-gradient(to right, #667eea, #764ba2);
@@ -177,7 +170,7 @@ body {
       box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
     }
 
-    button::before {
+button::before {
       content: "";
       position: absolute;
       top: 0;
@@ -190,15 +183,15 @@ body {
       z-index: 0;
     }
 
-    button:hover::before {
+button:hover::before {
       left: 130%;
     }
 
-    button:hover {
+button:hover {
       background: linear-gradient(to right, #5a67d8, #6b46c1);
-      background-color: #e0a800; /* Darker yellow/orange on hover */
-      box-shadow: 0 12px 30px rgba(255, 193, 7, 0.5); /* Deeper, wider shadow */
-      transform: translateY(-5px) scale(1.02); /* More lift and scale effect */
+      background-color: #e0a800;
+      box-shadow: 0 12px 30px rgba(255, 193, 7, 0.5);
+      transform: translateY(-5px) scale(1.02);
     }
 
 .footer {
@@ -208,27 +201,37 @@ body {
       color: #718096;
     }
 
-    /* NEW: Style for the "Have an account? Login" link */
 .auth-switch-link {
-        margin-top: 20px; /* Space above the link */
-        text-align: center;
-        font-size: 0.95rem;
-        color: #718096;
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #718096;
     }
 
 .auth-switch-link a {
-        color: #5a67d8; /* A color that stands out but matches the gradient */
-        text-decoration: none;
-        font-weight: 600;
-        transition: color 0.3s ease;
+      color: #5a67d8;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
     }
 
 .auth-switch-link a:hover {
-        color: #6b46c1; /* Darker shade on hover */
-        text-decoration: underline;
+      color: #6b46c1;
+      text-decoration: underline;
     }
 
-  </style>
+.toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: #888;
+      z-index: 2;
+    }
+</style>
+
 <script>
 function sendVerification(event) {
     event?.preventDefault();
@@ -242,18 +245,30 @@ function sendVerification(event) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, email, password }),
     })
-.then((response) => {
+    .then((response) => {
         if (!response.ok) throw new Error("Network response was not ok");
         return response.json();
     })
-.then((data) => alert(data.message))
-.catch((error) => {
+    .then((data) => alert(data.message))
+    .catch((error) => {
         console.error("Error:", error);
         alert("Error sending verification email");
     });
 }
+
+function togglePassword(inputId, icon) {
+  const input = document.getElementById(inputId);
+  if (input.type === "password") {
+    input.type = "text";
+    icon.textContent = "🙈";
+  } else {
+    input.type = "password";
+    icon.textContent = "👁️";
+  }
+}
 </script>
 </head>
+
 <body>
   <div class="wrapper">
     <div class="logo-circle">P</div>
@@ -266,9 +281,10 @@ function sendVerification(event) {
           <label for="username">Username</label>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" style="position: relative;">
           <input type="password" name="password" id="password" placeholder="Password" required />
           <label for="password">Password</label>
+          <span class="toggle-password" onclick="togglePassword('password', this)">👁️</span>
         </div>
 
         <div class="form-group">
@@ -277,7 +293,6 @@ function sendVerification(event) {
         </div>
 
         <button type="button" onclick="sendVerification(event)">Send Verification Link</button>
-
       </form>
       <div class="auth-switch-link">
           Have an account? <a href="/login">Login</a>

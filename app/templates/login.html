@@ -1,337 +1,323 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login to PrivTalk</title>
-    <link rel="icon" type="image/png" href="/static/icon.png">
-     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        /* Global Styles for a clean foundation - Adopted from register.html */
-        * {
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login to PrivTalk</title>
+  <link rel="icon" type="image/png" href="/static/icon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
 
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Matched register.html font */
-            background: linear-gradient(to bottom right, #f3f4f6, #95b6e0); /* Matched register.html background */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            width: 100%;
-            /* Removed -webkit-font-smoothing, -moz-osx-font-smoothing, color, line-height from original login.html body */
-        }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom right, #f3f4f6, #95b6e0);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100%;
+    }
 
-        /* Wrapper for the container and logo circle - Adopted from register.html */
-      .wrapper {
-            position: relative;
-            padding-top: 120px; /* Space for the logo circle to sit above */
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            margin-top: -40px; /* Lifts the entire container slightly up, consistent with register.html */
-        }
+    .wrapper {
+      position: relative;
+      padding-top: 120px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: -40px;
+    }
 
-        /* Main container for content - Adopted from register.html (.login-container) */
-      .login-container { /* Renamed from.auth-container for consistency */
-            background: #ffffff; /* Solid white, consistent with register.html */
-            padding: 4rem 2.5rem 3rem; /* Matched register.html padding */
-            border-radius: 16px; /* Matched register.html border-radius */
-            box-shadow: 0 20px 55px rgba(0, 0, 0, 0.12); /* Matched register.html box-shadow */
-            border: 1px solid #e0e0e0; /* Matched register.html border */
-            width: 100%;
-            max-width: 500px; /* Matched register.html max-width */
-            min-width: 320px; /* Matched register.html min-width */
-            position: relative;
-            animation: fade-in 0.6s ease-out; /* Matched register.html animation */
-            text-align: center; /* Keep for general content alignment */
-        }
+    .login-container {
+      background: #ffffff;
+      padding: 4rem 2.5rem 3rem;
+      border-radius: 16px;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.12);
+      border: 1px solid #e0e0e0;
+      width: 100%;
+      max-width: 500px;
+      min-width: 320px;
+      position: relative;
+      animation: fade-in 0.6s ease-out;
+      text-align: center;
+    }
 
-        /* Top gradient bar for the container - Adopted from register.html */
-      .login-container::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 6px;
-            background: linear-gradient(to right, #667eea, #764ba2);
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
-        }
+    .login-container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+    }
 
-        /* Animation for the container - Adopted from register.html */
-        @keyframes fade-in {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        /* Logo circle styling - Adopted from register.html */
-      .logo-circle {
-            position: absolute;
-            top: 50px; /* Positions the logo fully visible within the wrapper's padding-top */
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(to right, #667eea, #764ba2);
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-weight: bold;
-            font-size: 28px;
-            border: 4px solid white;
-            z-index: 10;
-        }
+    .logo-circle {
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(to right, #667eea, #764ba2);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+      font-size: 28px;
+      border: 4px solid white;
+      z-index: 10;
+    }
 
-        /* Main PrivTalk Heading - Adopted from register.html h1 */
-      .login-container h1 {
-            text-align: center;
-            margin-bottom: 12px; /* Adjusted for spacing between h1 and h2 */
-            margin-top: 12px;
-            font-size: 40px;
-            font-weight: 700;
-            letter-spacing: 0.7px;
-            background: linear-gradient(to right,rgb(132, 11, 11), #764ba2); /* Matched register.html h1 gradient */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 4px rgba(122, 122, 122, 0.2);
-        }
+    .login-container h1 {
+      text-align: center;
+      margin-bottom: 12px;
+      margin-top: 12px;
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: 0.7px;
+      background: linear-gradient(to right,rgb(132, 11, 11), #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 4px rgba(122, 122, 122, 0.2);
+    }
 
-        /* Secondary Heading for "Login" - Adopted from register.html h2 */
-      .login-container h2 {
-            text-align: center;
-            margin-bottom: 32px;
-            margin-top: 0; /* Adjusted to remove extra space */
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: 0.7px;
-            background: linear-gradient(to right, #5a67d8, #764ba2); /* Matched register.html h2 gradient */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 4px rgba(122, 122, 122, 0.2);
-        }
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 32px;
+      margin-top: 0;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.7px;
+      background: linear-gradient(to right, #5a67d8, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 4px rgba(122, 122, 122, 0.2);
+    }
 
-        /* Form group styling - Adopted from register.html */
-      .form-group { /* Renamed from.input-group */
-            position: relative;
-            margin-bottom: 28px;
-            text-align: left; /* Ensure labels and inputs align left within the group */
-        }
+    .form-group {
+      position: relative;
+      margin-bottom: 28px;
+      text-align: left;
+    }
 
-      .form-group input[type="text"],
-      .form-group input[type="email"],
-      .form-group input[type="password"] { /* Combined and adopted from register.html input */
-            width: 100%;
-            padding: 16px 14px 14px; /* Matched register.html input padding */
-            border: 1px solid #cbd5e0; /* Matched register.html input border */
-            border-radius: 8px; /* Matched register.html input border-radius */
-            font-size: 15px; /* Matched register.html input font-size */
-            color: #2d3748; /* Matched register.html input color */
-            background-color: #f9fafb; /* Matched register.html input background */
-            transition: all 0.25s ease;
-        }
+    .form-group input {
+      width: 100%;
+      padding: 16px 14px 14px;
+      border: 1px solid #cbd5e0;
+      border-radius: 8px;
+      font-size: 15px;
+      color: #2d3748;
+      background-color: #f9fafb;
+      transition: all 0.25s ease;
+    }
 
-      .form-group input[type="text"]:focus,
-      .form-group input[type="email"]:focus,
-      .form-group input[type="password"]:focus { /* Adopted from register.html input focus */
-            border-color: #7f9cf5;
-            box-shadow: 0 0 8px rgba(127, 156, 245, 0.3);
-            background-color: #ffffff;
-            outline: none;
-        }
+    .form-group input:focus {
+      border-color: #7f9cf5;
+      box-shadow: 0 0 8px rgba(127, 156, 245, 0.3);
+      background-color: #ffffff;
+      outline: none;
+    }
 
-      .form-group label { /* Adopted from register.html label */
-            position: absolute;
-            top: 50%;
-            left: 16px;
-            transform: translateY(-50%);
-            font-size: 14px;
-            color: #000;
-            pointer-events: none;
-            background: #ffffff;
-            padding: 0 4px;
-            transition: 0.2s ease all;
-        }
+    .form-group label {
+      position: absolute;
+      top: 50%;
+      left: 16px;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: #000;
+      pointer-events: none;
+      background: #ffffff;
+      padding: 0 4px;
+      transition: 0.2s ease all;
+    }
 
-      .form-group input:focus + label,
-      .form-group input:not(:placeholder-shown) + label { /* Adopted from register.html label animation */
-            top: -10px;
-            font-size: 12px;
-            color: #5a67d8;
-        }
+    .form-group input:focus + label,
+    .form-group input:not(:placeholder-shown) + label {
+      top: -10px;
+      font-size: 12px;
+      color: #5a67d8;
+    }
 
-        input::placeholder { /* Adopted from register.html placeholder hiding */
-            color: rgba(255, 255, 255, 0);
-        }
+    input::placeholder {
+      color: rgba(255, 255, 255, 0);
+    }
 
-        /* Common styles for all CTA buttons - Adopted from register.html button */
-        button {
-            width: 100%;
-            padding: 14px; /* Matched register.html button padding */
-            background: linear-gradient(to right, #667eea, #764ba2); /* Matched register.html button background */
-            color: white;
-            font-weight: 600;
-            font-size: 16px; /* Matched register.html button font-size */
-            border: none;
-            border-radius: 8px; /* Matched register.html button border-radius */
-            cursor: pointer;
-            margin-top: 10px; /* Matched register.html button margin-top */
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            transition: background 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
-        }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
+    }
 
-        button::before { /* Matched register.html button hover effect */
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -75%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: skewX(-20deg);
-            transition: left 0.4s;
-            z-index: 0;
-        }
+    button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -75%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: skewX(-20deg);
+      transition: left 0.4s;
+      z-index: 0;
+    }
 
-        button:hover::before { /* Matched register.html button hover effect */
-            left: 130%;
-        }
+    button:hover::before {
+      left: 130%;
+    }
 
-        button:hover { /* Matched register.html button hover effect */
-            background: linear-gradient(to right, #5a67d8, #6b46c1);
-            transform: translateY(-1px);
-        }
+    button:hover {
+      background: linear-gradient(to right, #5a67d8, #6b46c1);
+      transform: translateY(-1px);
+    }
 
-        /* Specific style for the Login button (Primary CTA) - Retained original color, but adopted hover/focus from general button */
-        #loginSubmitBtn {
-            background-color: #007bff; /* Original color from login.html */
-            color: white;
-            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
-            /* Removed specific hover/focus/active styles as they are now handled by general button rules */
-        }
-        #loginSubmitBtn:hover {
-            background-color: #e0a800; /* Darker yellow/orange on hover */
-            box-shadow: 0 12px 30px rgba(255, 193, 7, 0.5); /* Deeper, wider shadow */
-            transform: translateY(-5px) scale(1.02); /* More lift and scale effect */
-        }
-        /* Forgot password link - Adopted from register.html.auth-switch-link */
-      .forgot-password-link { /* Renamed from.options-group */
-            margin-top: 20px;
-            text-align: center;
-            font-size: 0.95rem;
-            color: #718096;
-        }
+    #loginSubmitBtn {
+      background-color: #007bff;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+    }
 
-      .forgot-password-link a {
-            color: #5a67d8;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
+    #loginSubmitBtn:hover {
+      background-color: #e0a800;
+      box-shadow: 0 12px 30px rgba(255, 193, 7, 0.5);
+      transform: translateY(-5px) scale(1.02);
+    }
 
-      .forgot-password-link a:hover {
-            color: #6b46c1;
-            text-decoration: underline;
-        }
+    .forgot-password-link, .auth-switch-link {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #718096;
+    }
 
-        /* Auth switch link - Adopted from register.html.auth-switch-link */
-      .auth-switch-link {
-            margin-top: 15px; /* Adjusted margin to separate from forgot password link */
-            text-align: center;
-            font-size: 0.95rem;
-            color: #718096;
-        }
+    .forgot-password-link a,
+    .auth-switch-link a {
+      color: #5a67d8;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
 
-      .auth-switch-link a {
-            color: #5a67d8;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
+    .forgot-password-link a:hover,
+    .auth-switch-link a:hover {
+      color: #6b46c1;
+      text-decoration: underline;
+    }
 
-      .auth-switch-link a:hover {
-            color: #6b46c1;
-            text-decoration: underline;
-        }
+    .footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #718096;
+    }
 
-        /* Footer - Adopted from register.html */
-      .footer {
-            margin-top: 28px;
-            text-align: center;
-            font-size: 0.95rem;
-            color: #718096;
-        }
-    </style>
-</head>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: #888;
+      z-index: 2;
+    }
+  </style>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById('loginForm').addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const emailOrUsername = document.getElementById('username-email').value.trim();
         const password = document.getElementById('password').value;
 
         try {
-            const response = await fetch("http://localhost:8000/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    identifier: emailOrUsername,
-                    password: password
-                })
-            });
+          const response = await fetch("http://localhost:8000/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              identifier: emailOrUsername,
+              password: password
+            })
+          });
 
-            const data = await response.json();
+          const data = await response.json();
 
-            if (data.success) {
-                alert("Login successful!");
+          if (data.success) {
+            alert("Login successful!");
             window.location.href = `/profile?email=${data.email}&token=${data.chat_token}&username=${data.username}`;
-            } else {
-                alert(data.message || "Login failed.");
-            }
+          } else {
+            alert(data.message || "Login failed.");
+          }
         } catch (err) {
-            console.error("Login error:", err);
-            alert("An error occurred. Please try again.");
+          console.error("Login error:", err);
+          alert("An error occurred. Please try again.");
         }
+      });
     });
-});
-</script>
 
+    function togglePassword(inputId, icon) {
+      const input = document.getElementById(inputId);
+      if (input.type === "password") {
+        input.type = "text";
+        icon.textContent = "🙈";
+      } else {
+        input.type = "password";
+        icon.textContent = "👁️";
+      }
+    }
+  </script>
+</head>
 
 <body>
-    <div class="wrapper">
-        <div class="logo-circle">P</div>
-        <div class="login-container">
-            <h1>PrivTalk</h1>
-            <h2>Login</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <input type="text" id="username-email" name="username_email" placeholder="Username / Email" required>
-                    <label for="username-email">Username / Email</label>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="password" name="password" placeholder="Password" required>
-                    <label for="password">Password</label>
-                </div>
-                <button type="submit" id="loginSubmitBtn">Login</button>
-            </form>
-            <div class="forgot-password-link">
-                <a href="/forgot-password">Forgot Password?</a>
-            </div>
-            <div class="auth-switch-link">
-                Don't have an account? <a href="/register">Sign up</a>
-            </div>
-            <div class="footer">PrivTalk &copy; 2025</div>
+  <div class="wrapper">
+    <div class="logo-circle">P</div>
+    <div class="login-container">
+      <h1>PrivTalk</h1>
+      <h2>Login</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <input type="text" id="username-email" name="username_email" placeholder="Username / Email" required>
+          <label for="username-email">Username / Email</label>
         </div>
+        <div class="form-group" style="position: relative;">
+          <input type="password" id="password" name="password" placeholder="Password" required>
+          <label for="password">Password</label>
+          <span class="toggle-password" onclick="togglePassword('password', this)">👁️</span>
+        </div>
+        <button type="submit" id="loginSubmitBtn">Login</button>
+      </form>
+      <div class="forgot-password-link">
+        <a href="/forgot-password">Forgot Password?</a>
+      </div>
+      <div class="auth-switch-link">
+        Don't have an account? <a href="/register">Sign up</a>
+      </div>
+      <div class="footer">PrivTalk &copy; 2025</div>
     </div>
+  </div>
 </body>
 </html>
