@@ -35,10 +35,28 @@
         <button class="copy-btn" onclick="copyToken()">Copy Token</button>
         <span id="copyFeedback" style="color: lightgreen; display: none; font-size: 0.9rem;">Copied!</span>
       </div>
+      
+<div class="qr-container">
+    <h2>Chat Token QR Code</h2>
+    <img src="{{ qr_url }}" alt="QR Code" class="qr-image"/>
+    <a href="{{ qr_url }}" download="chat_token_qr.png" class="download-link">Download QR Code</a>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const chatToken = "{{ token }}"; // Jinja2 will replace with actual token
+    fetch(`/generate-qr?token=${chatToken}`)//calling to auth
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("downloadQr").href = `/assets/qrcodes/${data.filename}`;
+        })
+        .catch(err => console.error("QR fetch failed", err));
+});
+</script>
 
       <div class="action-buttons">
         <button class="edit-btn" onclick="window.location.href='/edit-profile'">Edit Profile</button>
-        <button class="connect-btn" onclick="window.location.href='/connect'">Connect with Token</button>
+        <button class="old-connect-btn" onclick="window.location.href='/connectold'">Connect Old User</button>
+        <button class="new-connect-btn" onclick="window.location.href='/connectnew'">Connect New User</button>
       </div>
     </div>
   </main>

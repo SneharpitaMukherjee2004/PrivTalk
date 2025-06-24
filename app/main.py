@@ -6,6 +6,10 @@ from fastapi import FastAPI, Request # type: ignore
 from fastapi.responses import HTMLResponse # type: ignore
 from fastapi.templating import Jinja2Templates # type: ignore
 from fastapi.staticfiles import StaticFiles # type: ignore
+from app.services.qrgenerator import create_qr_code 
+from fastapi.staticfiles import StaticFiles
+import os
+
 app = FastAPI()
 
 app.add_middleware(
@@ -20,6 +24,13 @@ app.add_middleware(
 app.include_router(auth.router)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+
+# Mount the assets directory for QR code access
+if not os.path.exists("app/assets/qrcodes"):
+    os.makedirs("app/assets/qrcodes")
+
+app.mount("/assets", StaticFiles(directory="app/assets"), name="assets")
 
 
 # Template engine setup
@@ -45,13 +56,27 @@ def forgot_password_page(request: Request):
     return templates.TemplateResponse("forgot_password.html", {"request": request})
 #profilepage
 @app.get("/profile", response_class=HTMLResponse)
-async def serve_profile(request: Request, email: str, token: str,username: str):
+def profile_page(request: Request, email: str, username: str, token: str):
+     
+    qr_path = create_qr_code(token)  # returns 'app/assets/qrcodes/qr_xxxx.png'
+    qr_url = "/" + qr_path.replace("app/", "")  # gives '/assets/qrcodes/qr_xxxx.png'
+
+    # serves from /qrcodes/filename.png
     return templates.TemplateResponse("profile.html", {
         "request": request,
         "email": email,
+        "username": username,
         "token": token,
-        "username": username
+        "qr_url": qr_url
     })
+
+
+
+# Serve connectnew.html page
+@app.get("/connectnew", response_class=HTMLResponse)
+def connect_new_user_page(request: Request):
+    return templates.TemplateResponse("connect_new.html", {"request": request})
+
 
 
 #databaseconnection

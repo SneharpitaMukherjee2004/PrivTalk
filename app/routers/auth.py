@@ -106,3 +106,14 @@ def login_user(req: LoginRequest):
         }
     finally:
         db.close()
+        
+from fastapi.responses import JSONResponse
+from app.services.qrgenerator import create_qr_code
+import os
+
+@router.get("/generate-qr")
+def generate_qr(token: str):
+    filepath = create_qr_code(token, folder="app/assets/qrcodes")
+    filename = os.path.basename(filepath)
+    return JSONResponse(content={"filename": filename})
+
