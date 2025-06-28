@@ -17,7 +17,15 @@
   <main class="container">
     <h3 class="customer_msg">Welcome, {{ username }}</h3>
     <div class="profile-container">
-      <h2>👤 My Profile</h2>
+
+      <div class="profile-header">
+        <h2>👤 My Profile</h2>
+        {% if profile_photo %}
+        <div class="profile-photo-top">
+          <img src="{{ profile_photo or '/static/default-user.png' }}" alt="Profile Photo" />
+        </div>
+        {% endif %}
+      </div>
 
       <div class="profile-field">
         <label>Username</label>
@@ -54,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
       <div class="action-buttons">
-        <button class="edit-btn" onclick="window.location.href='/edit-profile'">Edit Profile</button>
+        <button class="edit-btn" onclick="window.location.href='/edit-profile?email={{ email }}'">Edit Profile</button>
         <button class="old-connect-btn" onclick="window.location.href='/connectold'">Connect Old User</button>
         <button class="new-connect-btn" onclick="window.location.href='/connectnew'">Connect New User</button>
       </div>

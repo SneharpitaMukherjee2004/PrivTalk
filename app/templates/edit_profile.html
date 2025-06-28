@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Profile | PrivTalk</title>
+  <link rel="stylesheet" href="/static/update_profile.css" />
+  <link rel="icon" type="image/png" href="/static/icon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="header">
+    <h1 class="app_name">PrivTalk</h1>
+  </div>
+
+  <main class="container">
+    <h2>Edit Your Profile</h2>
+
+    {% if profile_photo %}
+    <div class="profile-photo-preview">
+      <img src="{{ profile_photo }}" alt="Profile Photo" />
+    </div>
+    {% endif %}
+
+    <form class="profile-form" method="post" enctype="multipart/form-data" action="/update-profile?email={{ email }}">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" name="username" value="{{ username }}" required />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" name="email" value="{{ email }}" required />
+      </div>
+
+      <div class="form-group">
+        <label for="password">New Password</label>
+        <input type="password" name="password" placeholder="Leave blank to keep current password" />
+      </div>
+
+      <div class="form-group">
+        <label for="photo">Change Profile Photo</label>
+        <input type="file" name="photo" accept="image/*" />
+      </div>
+
+      <button type="submit" class="update-btn">Update Profile</button>
+    </form>
+  </main>
+  <script>
+    const photoInput = document.querySelector('input[name="photo"]');
+    const previewImg = document.querySelector('.profile-photo-preview img');
+
+    if (photoInput && previewImg) {
+        photoInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+            previewImg.src = URL.createObjectURL(file);
+        }
+        });
+    }
+  </script>
+</body>
+</html>

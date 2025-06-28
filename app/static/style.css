@@ -87,6 +87,23 @@ body {
     box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
 }
 
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.profile-photo-top img {
+  width: 66px;
+  height: 66px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #764ba2;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+}
+
+
 
 /* ========== Form Fields ========== */
 

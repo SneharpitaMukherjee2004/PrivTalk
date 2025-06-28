@@ -1,0 +1,106 @@
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(to right, #e0ecff, #f8faff);
+  margin: 0;
+  padding: 0;
+  color: #2d3748;
+}
+
+/* Header */
+.header {
+  background-color: #764ba2;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+.app_name {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+/* Container */
+.container {
+  max-width: 440px;
+  margin: 50px auto;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Title */
+h2 {
+  text-align: center;
+  color: #4a5568;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+
+/* Profile Image Preview */
+.profile-photo-preview {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.profile-photo-preview img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #764ba2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Fields */
+.profile-form .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.profile-form label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #555;
+}
+
+.profile-form input[type="text"],
+.profile-form input[type="email"],
+.profile-form input[type="password"],
+.profile-form input[type="file"] {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e0;
+  border-radius: 10px;
+  background: #f9fafc;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.profile-form input:focus {
+  outline: none;
+  border-color: #764ba2;
+  background-color: #ffffff;
+}
+
+/* Button */
+.update-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #764ba2;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+.update-btn:hover {
+  background-color: #5a67d8;
+}

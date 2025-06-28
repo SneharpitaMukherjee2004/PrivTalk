@@ -9,3 +9,4 @@ class User(Base):
     email = Column(String(255), unique=True, index=True)            
     hashed_password = Column(String(255))                           
     chattoken=Column(String(255), unique=True)
+    profile_photo = Column(String(255), nullable=True)

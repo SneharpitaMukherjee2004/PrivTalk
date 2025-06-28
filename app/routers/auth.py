@@ -10,8 +10,24 @@ from app.database import SessionLocal
 from app.models.token import VerificationToken
 from app.models.user import User
 from fastapi.responses import RedirectResponse
+from fastapi import Request, Depends
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi import Form, UploadFile, File
+import shutil
+import os
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+templates = Jinja2Templates(directory="app/templates")
 
 def hash_password_sha256(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
@@ -20,6 +36,66 @@ class EmailRequest(BaseModel):
     email: EmailStr
     password: str 
     username:str
+
+# logic for serve the Edit Profile form
+@router.get("/edit-profile", response_class=HTMLResponse)
+def get_edit_profile(request: Request, email: str, db: Session = Depends(get_db)):
+    if not email:
+        return HTMLResponse("❌ Email is required to edit profile", status_code=400)
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        return HTMLResponse("User not found", status_code=404)
+    
+    return templates.TemplateResponse("edit_profile.html", {
+        "request": request,
+        "username": user.username,
+        "email": user.email,
+        "profile_photo": user.profile_photo
+    })
+
+# Logic for handle the submission for Edit Profile
+@router.post("/update-profile")
+def update_profile(
+    request: Request,
+    username: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(None),
+    photo: UploadFile = File(None),
+    db: Session = Depends(get_db)
+):
+    try:
+        current_email = request.query_params.get("email")
+        if not current_email:
+            return JSONResponse(content={"error": "Missing email in query params"}, status_code=400)
+
+        user = db.query(User).filter(User.email == current_email).first()
+        if not user:
+            return JSONResponse(content={"error": "User not found"}, status_code=404)
+
+        user.username = username
+        user.email = email
+
+        if password:
+            user.hashed_password = hash_password_sha256(password)
+
+        if photo and photo.filename:
+            upload_dir = "app/assets/uploads"
+            os.makedirs(upload_dir, exist_ok=True)
+            file_path = os.path.join(upload_dir, photo.filename)
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(photo.file, buffer)
+            user.profile_photo = f"/assets/uploads/{photo.filename}"
+
+        db.commit()
+
+        return RedirectResponse(
+            url=f"/profile?email={user.email}&username={user.username}&token={user.chattoken}",
+            status_code=302
+        )
+    
+    except Exception as e:
+        print("🔴 UPDATE ERROR:", str(e))
+        return JSONResponse(content={"error": str(e)}, status_code=500)
 
 #logic of verification for new user
 @router.post("/verify")

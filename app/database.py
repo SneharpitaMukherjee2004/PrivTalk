@@ -9,5 +9,6 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 #Import models after Base is defined
 
-from app.models import token, user 
+from app.models import token, user
+from app.models.message import Message
 Base.metadata.create_all(bind=engine)
