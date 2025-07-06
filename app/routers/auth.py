@@ -209,10 +209,10 @@ def login_user(req: LoginRequest):
 
 from app.services.qrgenerator import create_qr_code
 
-
 @router.get("/generate-qr")
 def generate_qr(token: str):
-    filepath = create_qr_code(token, folder="app/assets/qrcodes")
+    folder = "app/assets/qrcodes"
+    filepath = create_qr_code(token, folder)
     filename = os.path.basename(filepath)
     return JSONResponse(content={"filename": filename})
 
