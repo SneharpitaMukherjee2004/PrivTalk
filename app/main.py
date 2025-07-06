@@ -20,7 +20,8 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust this for production
+    allow_origins=["http://127.0.0.1:8000",
+    "http://localhost:8000"],  # Adjust this for production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -102,7 +103,6 @@ def edit_profile_page(request: Request, email: str, db: Session = Depends(get_db
         "profile_photo": user.profile_photo
     })'''
 
-#Serve chatting.html page
 @app.get("/chat", response_class=HTMLResponse)
 def serve_chat(request: Request, token: str, db: Session = Depends(get_db)):
     users = db.query(User).filter(User.chattoken == token).all()
@@ -113,13 +113,25 @@ def serve_chat(request: Request, token: str, db: Session = Depends(get_db)):
             "error": "Invalid or expired chat token."
         })
 
-    other_user = users[0].username  # Optional: improve logic later
+    # ✅ FIXED: Match cookie key with actual set cookie
+    current_username = request.cookies.get("current_user")  # ✅ This must match set_cookie key
+
+    current_user_obj = db.query(User).filter(User.username == current_username).first()
+
+    if not current_user_obj:
+        return HTMLResponse("Invalid user", status_code=401)
+
+    # ✅ Get other user
+    other_user = [u for u in users if u.username != current_username][0].username
 
     return templates.TemplateResponse("chatting.html", {
         "request": request,
         "token": token,
+        "current_user": current_user_obj.username,
         "other_user": other_user
     })
+
+
 
 # Serve connecting_new.html page
 @app.get("/connectnew", response_class=HTMLResponse)

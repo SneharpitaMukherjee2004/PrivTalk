@@ -161,31 +161,54 @@ def verify_email(req: EmailRequest):
 class LoginRequest(BaseModel):
     identifier: str  # username or email
     password: str
-
+    
 @router.post("/login")
 def login_user(req: LoginRequest):
     db = SessionLocal()
     try:
+        # ✅ Find user by email or username
         user = db.query(User).filter(
             (User.email == req.identifier) | (User.username == req.identifier)
         ).first()
 
+        # ❌ If no user or password mismatch
         if not user or user.hashed_password != hash_password_sha256(req.password):
-            return {"success": False, "message": "Invalid credentials"}
+            return JSONResponse(content={"success": False, "message": "Invalid credentials"})
 
-        return {
+        # ✅ Prepare JSON response
+        response_data = {
             "success": True,
             "message": "Login successful",
             "email": user.email,
             "chat_token": user.chattoken,
             "username": user.username,
         }
+        response = JSONResponse(content=response_data)
+         
+        response.set_cookie(
+            key="chat_token",
+            value=user.chattoken,
+            httponly=True,
+            path="/",
+            secure=False,
+            samesite="Lax"
+        )
+        response.set_cookie(
+            key="current_user",
+            value=user.username,
+            httponly=True,
+            samesite="Lax",
+            path="/",
+            secure=False,  
+        )
+
+        return response
+
     finally:
-        db.close()
-        
-from fastapi.responses import JSONResponse
+        db.close
+
 from app.services.qrgenerator import create_qr_code
-import os
+
 
 @router.get("/generate-qr")
 def generate_qr(token: str):

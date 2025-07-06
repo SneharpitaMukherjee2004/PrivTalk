@@ -29,70 +29,90 @@
       <button onclick="sendMessage()">Send</button>
     </div>
   </div>
+<script>
+  const chatBox = document.getElementById("chatBox");
+  const messageInput = document.getElementById("messageInput");
+  const fileInput = document.getElementById("fileInput");
+  const typingIndicator = document.getElementById("typingIndicator");
 
-  <script>
-    const chatBox = document.getElementById("chatBox");
-    const messageInput = document.getElementById("messageInput");
-    const fileInput = document.getElementById("fileInput");
-    const recordBtn = document.getElementById("recordBtn");
-    const typingIndicator = document.getElementById("typingIndicator");
+  // ✅ Get token from URL
+  const token = new URLSearchParams(window.location.search).get("token");
 
-    const token = new URLSearchParams(window.location.search).get("token");
-    const socket = new WebSocket(`ws://localhost:8000/ws/chat/${token}`);
+  // ✅ Get current user from cookie (Not from Jinja)
+  const currentUser = document.cookie
+    .split("; ")
+    .find(row => row.startsWith("current_user="))
+    ?.split("=")[1];
 
-    // Typing indicator
-    messageInput.addEventListener("input", () => {
-      socket.send("__typing__");
-    });
+  if (!currentUser) {
+    alert("⚠️ Login expired. Please log in again.");
+    window.location.href = "/login";
+  }
 
-    // Seen update on window focus
-    window.addEventListener("focus", () => {
-      socket.send("__seen__");
-    });
+  // ✅ Create WebSocket with valid username
+  const socket = new WebSocket(`ws://localhost:8000/ws/chat/${token}?username=${currentUser}`);
 
-    socket.onmessage = function (event) {
-      const data = event.data;
+  socket.onopen = () => {
+    console.log("✅ WebSocket connected");
+  };
 
-      if (data === "__typing__") {
-        typingIndicator.innerText = "Typing...";
-        setTimeout(() => { typingIndicator.innerText = ""; }, 2000);
-        return;
-      }
+  socket.onerror = err => {
+    console.error("❌ WebSocket error", err);
+  };
 
-      const timestamp = new Date().toLocaleTimeString();
-      const msgDiv = document.createElement("div");
-      msgDiv.className = "message friend";
-      msgDiv.innerHTML = `
-        <div class="bubble">
-          <div class="text">${data}</div>
-          <div class="timestamp">${timestamp} <span class="status">✅✅</span></div>
-        </div>`;
-      chatBox.appendChild(msgDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
+  socket.onclose = () => {
+    console.warn("⚠️ WebSocket closed. Invalid or expired session?");
+  };
+  messageInput.addEventListener("input", () => {
+    socket.send("__typing__");
+  });
 
-      // Send back delivery confirmation
-      // Optional if you track with message IDs
-      // socket.send("__delivered__:" + messageId);
-    };
+  window.addEventListener("focus", () => {
+    socket.send("__seen__");
+  });
 
-    function sendMessage() {
-      const msg = messageInput.value.trim();
-      if (!msg) return;
+  socket.onmessage = function (event) {
+    const data = event.data;
 
-      const timestamp = new Date().toLocaleTimeString();
-      const msgDiv = document.createElement("div");
-      msgDiv.className = "message user";
-      msgDiv.innerHTML = `
-        <div class="bubble">
-          <div class="text">${msg}</div>
-          <div class="timestamp">${timestamp} <span class="status">✅</span></div>
-        </div>`;
-      chatBox.appendChild(msgDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
-
-      socket.send(msg);
-      messageInput.value = "";
+    if (data === "__typing__") {
+      typingIndicator.innerText = "Typing...";
+      setTimeout(() => { typingIndicator.innerText = ""; }, 2000);
+      return;
     }
+
+    const timestamp = new Date().toLocaleTimeString();
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "message friend";
+    msgDiv.innerHTML = `
+      <div class="bubble">
+        <div class="text">${data}</div>
+        <div class="timestamp">${timestamp} <span class="status">✅✅</span></div>
+      </div>`;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  };
+
+  function sendMessage() {
+    const msg = messageInput.value.trim();
+    if (!msg) return;
+
+    const timestamp = new Date().toLocaleTimeString();
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "message user";
+    msgDiv.innerHTML = `
+      <div class="bubble">
+        <div class="text">${msg}</div>
+        <div class="timestamp">${timestamp} <span class="status">✅</span></div>
+      </div>`;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    socket.send(msg);
+    messageInput.value = "";
+  }
+
+  // Leave your file upload and voice recording code as it is below this
+
 
     async function uploadFile(file) {
       const formData = new FormData();
@@ -180,5 +200,6 @@
   });
 
   </script>
+
 </body>
 </html>

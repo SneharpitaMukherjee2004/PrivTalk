@@ -1,4 +1,6 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
+
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models.message import Message
@@ -8,61 +10,48 @@ router = APIRouter()
 
 connections = {}  # key: token, value: list of WebSocket connections
 
+from fastapi import WebSocket, WebSocketDisconnect, Query
+
 @router.websocket("/ws/chat/{token}")
-async def chat_ws(websocket: WebSocket, token: str):
+async def chat_ws(websocket: WebSocket, token: str, username: str = Query(...)):
     await websocket.accept()
+
     if token not in connections:
         connections[token] = []
-    connections[token].append(websocket)
+    connections[token].append({"ws": websocket, "username": username})
 
     try:
         while True:
             data = await websocket.receive_text()
 
-            # Typing event
+            # Typing signal
             if data == "__typing__":
                 for conn in connections[token]:
-                    if conn != websocket:
-                        await conn.send_text("__typing__")
+                    if conn["ws"] != websocket:
+                        await conn["ws"].send_text("__typing__")
                 continue
 
-            # Delivered event
-            elif data.startswith("__delivered__:"):
-                message_id = int(data.split(":")[1])
-                db = SessionLocal()
-                msg = db.query(Message).filter(Message.id == message_id).first()
-                if msg:
-                    msg.status = "delivered"
-                    db.commit()
-                db.close()
+            # Seen signal
+            if data == "__seen__":
                 continue
 
-            # Seen event
-            elif data == "__seen__":
-                db = SessionLocal()
-                db.query(Message).filter(Message.chat_token == token).update({"status": "seen"})
+            # Store message in DB
+            if not data.startswith("__"):
+                db: Session = SessionLocal()
+                msg = Message(
+                    token=token,
+                    sender=username,
+                    content=data,
+                    timestamp=datetime.utcnow()
+                )
+                db.add(msg)
                 db.commit()
                 db.close()
-                continue
 
-            # Save the message as sent
-            db = SessionLocal()
-            new_msg = Message(
-                chat_token=token,
-                sender="sender_username",  # Replace with real auth
-                receiver="receiver_username",  # Replace with real logic
-                content=data,
-                status="sent",
-                timestamp=datetime.utcnow()
-            )
-            db.add(new_msg)
-            db.commit()
-            msg_id = new_msg.id
-            db.close()
-
-            # Send message to all clients
+            # Broadcast to other users
             for conn in connections[token]:
-                await conn.send_text(data)
+                if conn["ws"] != websocket:
+                    await conn["ws"].send_text(data)
 
     except WebSocketDisconnect:
-        connections[token].remove(websocket)
+        connections[token] = [c for c in connections[token] if c["ws"] != websocket]
