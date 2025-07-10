@@ -12,3 +12,10 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 from app.models import token, user
 from app.models.message import Message
 Base.metadata.create_all(bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
