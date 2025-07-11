@@ -34,8 +34,8 @@ def hash_password_sha256(password: str) -> str:
 
 class EmailRequest(BaseModel):
     email: EmailStr
-    password: str 
-    username:str
+    password: str | None = None
+    username:str  | None = None
 
 # logic for serve the Edit Profile form
 @router.get("/edit-profile", response_class=HTMLResponse)
@@ -154,7 +154,48 @@ def verify_email(req: EmailRequest):
         print(f"[ERROR in /resetpass] {e}")  # Add this for debug
         raise HTTPException(status_code=500, detail=f"Error sending email: {e}")
     
-    
+# Logic for reset passord
+@router.get("/reset-password-form", response_class=HTMLResponse)
+def serve_reset_password_form(token: str, request: Request, db: Session = Depends(get_db)):
+    token_entry = db.query(VerificationToken).filter_by(token=token).first()
+    if not token_entry or token_entry.is_verified:
+        return HTMLResponse("Invalid or expired reset link", status_code=400)
+
+    return templates.TemplateResponse("reset_password.html", {
+        "request": request,
+        "token": token_entry.token
+    })
+
+@router.post("/submit-reset-password")
+def submit_reset_password(
+    request: Request,
+    token: str = Form(...),
+    new_password: str = Form(...),
+    confirm_password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    if new_password != confirm_password:
+        return HTMLResponse("Passwords do not match", status_code=400)
+
+    token_entry = db.query(VerificationToken).filter_by(token=token).first()
+    if not token_entry or token_entry.is_verified:
+        return HTMLResponse("Invalid or expired token", status_code=400)
+
+    user = db.query(User).filter(User.email == token_entry.email).first()
+    if not user:
+        return HTMLResponse("User not found", status_code=404)
+
+    hashed = hash_password_sha256(new_password)
+    user.hashed_password = hashed
+    db.commit()
+
+    token_entry.is_verified = True
+    db.commit()
+
+    # ✅ Show success alert with login link
+    return templates.TemplateResponse("reset_success.html", {
+        "request": request
+    })
     
     
 #login profilepagesetup
