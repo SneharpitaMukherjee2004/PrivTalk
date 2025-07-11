@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Password Reset Success - PrivTalk</title>
+  <link rel="icon" type="image/png" href="/static/icon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(to bottom right, #f3f4f6, #95b6e0);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 2.5rem 2rem;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 460px;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      color: #2d3748;
+      font-size: 20px;
+      margin-bottom: 1.2rem;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        background: linear-gradient(to right, #667eea, #764ba2);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        display: inline-block;
+    }
+
+    .btn:hover {
+        background: linear-gradient(to right, #5a67d8, #6b46c1);
+        transform: translateY(-2px);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">PrivTalk</div>
+    <h2>✅ Password reset successful!</h2>
+    <a href="/login" class="btn">Go to Login</a>
+  </div>
+</body>
+</html>
