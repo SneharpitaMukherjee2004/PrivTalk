@@ -1,11 +1,10 @@
-from fastapi import FastAPI # type: ignore
-from fastapi.middleware.cors import CORSMiddleware # type: ignore
-from app.routers import auth, chat, chat_websocket, connect_new, connect_old # type: ignore
-from fastapi.staticfiles import StaticFiles # type: ignore
-from fastapi import FastAPI, Request # type: ignore
-from fastapi.responses import HTMLResponse # type: ignore
-from fastapi.templating import Jinja2Templates # type: ignore
-from fastapi.staticfiles import StaticFiles # type: ignore
+from fastapi import FastAPI 
+from fastapi.middleware.cors import CORSMiddleware 
+from fastapi.staticfiles import StaticFiles 
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from app.services.qrgenerator import create_qr_code 
 from fastapi.staticfiles import StaticFiles
 import os
@@ -13,8 +12,10 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.database import SessionLocal
 from app.models.user import User
-from app.routers import upload  # New router
+from app.routers import upload,auth,room,ws_chat  #routers
 from app.routers.auth import get_db
+
+
 
 app = FastAPI()
 
@@ -29,11 +30,10 @@ app.add_middleware(
 
 
 app.include_router(auth.router)
-app.include_router(chat.router)
-app.include_router(chat_websocket.router)  # register WebSocket chat route
-app.include_router(connect_new.router)
-app.include_router(connect_old.router)
 app.include_router(upload.router)
+app.include_router(room.router)
+app.include_router(ws_chat.router)
+
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
@@ -102,46 +102,6 @@ def edit_profile_page(request: Request, email: str, db: Session = Depends(get_db
         "email": user.email,
         "profile_photo": user.profile_photo
     })'''
-
-@app.get("/chat", response_class=HTMLResponse)
-def serve_chat(request: Request, token: str, db: Session = Depends(get_db)):
-    users = db.query(User).filter(User.chattoken == token).all()
-
-    if not users:
-        return templates.TemplateResponse("connecting_new_failed.html", {
-            "request": request,
-            "error": "Invalid or expired chat token."
-        })
-
-    # ✅ FIXED: Match cookie key with actual set cookie
-    current_username = request.cookies.get("current_user")  # ✅ This must match set_cookie key
-
-    current_user_obj = db.query(User).filter(User.username == current_username).first()
-
-    if not current_user_obj:
-        return HTMLResponse("Invalid user", status_code=401)
-
-    # ✅ Get other user
-    other_user = [u for u in users if u.username != current_username][0].username
-
-    return templates.TemplateResponse("chatting.html", {
-        "request": request,
-        "token": token,
-        "current_user": current_user_obj.username,
-        "other_user": other_user
-    })
-
-
-
-# Serve connecting_new.html page
-@app.get("/connectnew", response_class=HTMLResponse)
-def connect_new_user_page(request: Request):
-    return templates.TemplateResponse("connecting_new.html", {"request": request})
-
-# Serve connecting_old.html page
-@app.get("/connectold", response_class=HTMLResponse)
-def connect_old_user_page(request: Request):
-    return templates.TemplateResponse("connecting_old.html", {"request": request})
 
 # databaseconnection
 from app.database import Base, engine

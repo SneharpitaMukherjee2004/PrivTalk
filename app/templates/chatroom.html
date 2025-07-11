@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat Room | PrivTalk</title>
+  <link rel="stylesheet" href="/static/chat_style.css" />
+  <link rel="icon" type="image/png" href="/static/icon.png" />
+</head>
+<body>
+  <div class="chat-wrapper">
+    <div class="chat-header">🔐 Private Chat Room</div>
+
+    <div id="chatBox" class="chat-box"></div>
+
+    <div class="chat-controls">
+      <input type="text" id="messageInput" placeholder="Type your message..." />
+      <button id="sendBtn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // 🔍 Extract query parameters from URL
+    function getQueryParam(key) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(key);
+    }
+
+    const chatToken = getQueryParam("chat_token");
+    const roomId = getQueryParam("room_id");
+
+    if (!chatToken || !roomId) {
+      alert("Missing chat credentials. Please login or rejoin the room.");
+      window.location.href = "/profile";
+    }
+
+    const chatBox = document.getElementById("chatBox");
+    const input = document.getElementById("messageInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    const socket = new WebSocket(`ws://localhost:8000/ws/chat/${roomId}?chat_token=${chatToken}`);
+
+    socket.onopen = () => {
+      console.log("✅ Connected to chat room");
+    };
+
+    socket.onmessage = (event) => {
+      const message = event.data;
+      displayMessage(message, "friend");
+    };
+
+    sendBtn.onclick = () => {
+      const msg = input.value.trim();
+      if (!msg) return;
+      socket.send(msg);
+      displayMessage(msg, "user");
+      input.value = "";
+    };
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") sendBtn.click();
+    });
+
+    function displayMessage(msg, type) {
+      const wrapper = document.createElement("div");
+      wrapper.className = `message ${type}`;
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.innerText = msg;
+
+      const timestamp = document.createElement("div");
+      timestamp.className = "timestamp";
+      timestamp.innerText = new Date().toLocaleTimeString();
+
+      wrapper.appendChild(bubble);
+      wrapper.appendChild(timestamp);
+
+      chatBox.appendChild(wrapper);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>

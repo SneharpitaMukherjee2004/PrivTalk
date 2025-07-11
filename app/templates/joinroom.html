@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Join Room | PrivTalk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="icon" type="image/png" href="/static/icon.png">
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    .container { max-width: 600px; margin: 40px auto; text-align: center; }
+    .section { margin-top: 40px; }
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      font-size: 1rem;
+      margin-bottom: 10px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #5a67d8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #434190; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Join a Chat Room</h1>
+
+    <!-- ✅ Manual Room ID Entry -->
+    <div class="section">
+      <h3>Enter Room ID</h3>
+      <input type="text" id="manualRoomId" placeholder="Enter Room ID">
+      <br>
+      <button onclick="joinManualRoom()">Join Room</button>
+    </div>
+
+    <!-- ✅ QR Code Scanner -->
+    <div class="section">
+      <h3>Or Scan QR Code</h3>
+      <div id="qr-reader" style="width: 300px; margin: auto;"></div>
+      <p id="scannedResult" style="margin-top: 10px;"></p>
+    </div>
+  </div>
+
+  <script>
+    function joinManualRoom() {
+      const roomId = document.getElementById("manualRoomId").value.trim();
+      if (!roomId) {
+        alert("Please enter a valid Room ID");
+        return;
+      }
+      window.location.href = /start-chat?room_id=${roomId};
+    }
+
+    function sha256(text) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      return crypto.subtle.digest("SHA-256", data).then(hashBuffer => {
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+      });
+    }
+
+    // ✅ QR Scanner Setup
+    const yourToken = document.cookie.split("; ").find(c => c.startsWith("chat_token="))?.split("=")[1];
+    const qr = new Html5Qrcode("qr-reader");
+
+    qr.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
+      async qrCodeMessage => {
+        qr.stop();  // Stop scanning after successful scan
+        document.getElementById("scannedResult").innerText = Scanned Token: ${qrCodeMessage};
+        
+        if (!yourToken) {
+          alert("Your chat token is missing. Please log in again.");
+          return;
+        }
+
+        const tokens = [yourToken, qrCodeMessage].sort().join("");
+        const hashedRoomId = await sha256(tokens);
+        window.location.href = /start-chat?room_id=${hashedRoomId};
+      },
+      error => {
+         console.warn("Scan failed", error);
+      }
+    );
+  </script>
+</body>
+</html>

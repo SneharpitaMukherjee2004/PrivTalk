@@ -30,7 +30,7 @@ def send_reset_password(email:str,token:str):
     html_body = f"""
     <html>
     <body>
-        <p>Hi,<br><br>
+        <p>DEAR USER,<br><br>
         A password reset request was received for your account.<br>
         Click below to reset your password:<br><br>
         <a href="{reset_link}">Reset Your Password</a><br><br>

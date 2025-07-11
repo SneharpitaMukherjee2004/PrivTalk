@@ -6,13 +6,12 @@
   <title>My Profile | PrivTalk</title>
   <link rel="stylesheet" href="/static/style.css" />
   <link rel="icon" type="image/png" href="/static/icon.png">
-
-  </head>
+</head>
 
 <body>
-<div class="header">
-<h1 class="app_name">PrivTalk</h1>
-</div>
+  <div class="header">
+    <h1 class="app_name">PrivTalk</h1>
+  </div>
 
   <main class="container">
     <h3 class="customer_msg">Welcome, {{ username }}</h3>
@@ -34,54 +33,69 @@
 
       <div class="profile-field">
         <label>Email</label>
-        <input type="text" value= "{{ email }}" readonly>
+        <input type="text" value="{{ email }}" readonly>
       </div>
 
       <div class="profile-field">
         <label>Chat Token</label>
         <input type="text" id="chatToken" value="{{ token }}" readonly>
-        <button class="copy-btn" onclick="copyToken()">Copy Token</button>
+        <button class="copy-btn" onclick=copyToken()>Copy Token</button>
         <span id="copyFeedback" style="color: lightgreen; display: none; font-size: 0.9rem;">Copied!</span>
       </div>
-      
-<div class="qr-container">
-    <h2>Chat Token QR Code</h2>
-    <img src="{{ qr_url }}" alt="QR Code" class="qr-image"/>
-    <a href="{{ qr_url }}" download="chat_token_qr.png" class="download-link">Download QR Code</a>
-</div>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const chatToken = "{{ token }}"; // Jinja2 will replace with actual token
-    fetch(`/generate-qr?token=${chatToken}`)//calling to auth
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById("downloadQr").href = `/assets/qrcodes/${data.filename}`;
-        })
-        .catch(err => console.error("QR fetch failed", err));
-});
-</script>
+
+      <div class="qr-container">
+        <h2>Chat Token QR Code</h2>
+        <img src="{{ qr_url }}" alt="QR Code" class="qr-image"/>
+        <a id="downloadQr" href="{{ qr_url }}" download="chat_token_qr.png" class="download-link">Download QR Code</a>
+      </div>
+
+      <div class="profile-field">
+        <label>Enter Peer Token to Create Room</label>
+        <input type="text" id="peerToken" placeholder="Enter other person's chat token">
+      </div>
 
       <div class="action-buttons">
         <button class="edit-btn" onclick="window.location.href='/edit-profile?email={{ email }}'">Edit Profile</button>
-        <button class="old-connect-btn" onclick="window.location.href='/connectold'">Connect Old User</button>
-        <button class="new-connect-btn" onclick="window.location.href='/connectnew'">Connect New User</button>
+        <button class="old-connect-btn" onclick=createRoom()>Create Room</button>
+        <button class="new-connect-btn" onclick="window.location.href='/joinroom'">Join Room</button>
       </div>
     </div>
-  </main>
+<script>
+  function copyToken() {
+    const tokenInput = document.getElementById("chatToken");
+    tokenInput.select();
+    tokenInput.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(tokenInput.value)
+      .then(() => {
+        const feedback = document.getElementById("copyFeedback");
+        feedback.style.display = "inline";
+        setTimeout(() => feedback.style.display = "none", 2000);
+      })
+      .catch(err => alert("Failed to copy token."));
+  }
 
-  <script>
-    function copyToken() {
-      const tokenInput = document.getElementById("chatToken");
-      tokenInput.select();
-      tokenInput.setSelectionRange(0, 99999); // For mobile
-      navigator.clipboard.writeText(tokenInput.value)
-        .then(() => {
-          const feedback = document.getElementById("copyFeedback");
-          feedback.style.display = "inline";
-          setTimeout(() => feedback.style.display = "none", 2000);
-        })
-        .catch(err => alert("Failed to copy token."));
+  function createRoom() {
+    const myToken = "{{ token }}";
+    const peerToken = document.getElementById("peerToken").value.trim();
+    if (!peerToken) {
+      alert("Please enter the other user's chat token.");
+      return;
     }
-  </script>
+    window.location.href = '/create-room?chat_token=${myToken}&peer_token=${peerToken}';
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const chatToken = "{{ token }}";
+    fetch('/generate-qr?token=${chatToken}')
+      .then(res => res.json())
+      .then(data => {
+        if (data.filename) {
+          document.getElementById("downloadQr").href = '/assets/qrcodes/${data.filename}';
+        }
+      })
+      .catch(err => console.error("QR fetch failed", err));
+  });
+</script>
+</main>
 </body>
 </html>
