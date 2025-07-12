@@ -57,7 +57,7 @@
         alert("Please enter a valid Room ID");
         return;
       }
-      window.location.href = /start-chat?room_id=${roomId};
+      window.location.href = `/attempt-join?room_id=${roomId}`;
     }
 
     function sha256(text) {
@@ -69,26 +69,25 @@
       });
     }
 
-    // ✅ QR Scanner Setup
     const yourToken = document.cookie.split("; ").find(c => c.startsWith("chat_token="))?.split("=")[1];
     const qr = new Html5Qrcode("qr-reader");
 
     qr.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
       async qrCodeMessage => {
-        qr.stop();  // Stop scanning after successful scan
-        document.getElementById("scannedResult").innerText = Scanned Token: ${qrCodeMessage};
-        
+        qr.stop();
+        document.getElementById("scannedResult").innerText = `Scanned Token: ${qrCodeMessage}`;
+
         if (!yourToken) {
           alert("Your chat token is missing. Please log in again.");
           return;
         }
 
-        const tokens = [yourToken, qrCodeMessage].sort().join("");
+        const tokens = [yourToken, qrCodeMessage.trim()].sort().join("");
         const hashedRoomId = await sha256(tokens);
-        window.location.href = /start-chat?room_id=${hashedRoomId};
+        window.location.href = `/attempt-join?room_id=${hashedRoomId}`;
       },
       error => {
-         console.warn("Scan failed", error);
+        console.log("QR ErroR")
       }
     );
   </script>

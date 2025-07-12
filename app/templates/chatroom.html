@@ -10,6 +10,15 @@
 <body>
   <div class="chat-wrapper">
     <div class="chat-header">🔐 Private Chat Room</div>
+    <div class="chat-header">
+  <h2>Chat Room</h2>
+  <p>Room ID: <code id="roomId">{{ room_id }}</code></p>
+  {% if qr_url %}
+    <img src="{{ qr_url }}" alt="Room QR" style="max-width:150px; margin-top:10px;" />
+    <br />
+    <a href="{{ qr_url }}" download="meeting_qr.png" style="color: blue;">Download QR Code</a>
+  {% endif %}
+</div>
 
     <div id="chatBox" class="chat-box"></div>
 

@@ -61,7 +61,8 @@
       </div>
     </div>
 <script>
-  function copyToken() {
+  function copyToken() 
+  {
     const tokenInput = document.getElementById("chatToken");
     tokenInput.select();
     tokenInput.setSelectionRange(0, 99999);
@@ -74,23 +75,32 @@
       .catch(err => alert("Failed to copy token."));
   }
 
-  function createRoom() {
+  function createRoom() 
+  {
     const myToken = "{{ token }}";
     const peerToken = document.getElementById("peerToken").value.trim();
     if (!peerToken) {
       alert("Please enter the other user's chat token.");
       return;
     }
-    window.location.href = '/create-room?chat_token=${myToken}&peer_token=${peerToken}';
-  }
+    fetch(`/create-room?chat_token=${myToken}&peer_token=${peerToken}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        window.location.href = `/chatroom?room_id=${data.room_id}&chat_token=${myToken}`;
+      } else {
+        alert("Failed to create room: " + data.message);
+      }
+    });
+}
 
   document.addEventListener("DOMContentLoaded", () => {
     const chatToken = "{{ token }}";
-    fetch('/generate-qr?token=${chatToken}')
+    fetch(`/generate-qr?token=${chatToken}`)
       .then(res => res.json())
       .then(data => {
         if (data.filename) {
-          document.getElementById("downloadQr").href = '/assets/qrcodes/${data.filename}';
+          document.getElementById("downloadQr").href = `/assets/qrcodes/${data.filename}`;
         }
       })
       .catch(err => console.error("QR fetch failed", err));
