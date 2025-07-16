@@ -34,62 +34,96 @@
   <div class="container">
     <h1>Join a Chat Room</h1>
 
-    <!-- ✅ Manual Room ID Entry -->
+    <!-- ✅ Manual Entry -->
     <div class="section">
-      <h3>Enter Room ID</h3>
-      <input type="text" id="manualRoomId" placeholder="Enter Room ID">
-      <br>
-      <button onclick="joinManualRoom()">Join Room</button>
+      <h3>Enter Room ID & Your Chat Token</h3>
+      <form method="POST" action="/attempt-join">
+        <input type="text" name="room_id" placeholder="Enter Room ID" required><br>
+        <input type="text" name="chat_token" placeholder="Enter Your Chat Token" required><br>
+        <button type="submit">Join Room</button>
+      </form>
     </div>
 
-    <!-- ✅ QR Code Scanner -->
+    <!-- ✅ QR Code Option -->
     <div class="section">
-      <h3>Or Scan QR Code</h3>
+      <h3>Or Scan Peer QR Code</h3>
+      <input type="text" id="yourToken" placeholder="Your Chat Token (Required for QR)" required><br>
       <div id="qr-reader" style="width: 300px; margin: auto;"></div>
-      <p id="scannedResult" style="margin-top: 10px;"></p>
+      <p id="scannedResult" style="margin: 10px;"></p>
     </div>
   </div>
+<script>
+  function sha256(text) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    return crypto.subtle.digest("SHA-256", data).then(hashBuffer => {
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    });
+  }
 
-  <script>
-    function joinManualRoom() {
-      const roomId = document.getElementById("manualRoomId").value.trim();
-      if (!roomId) {
-        alert("Please enter a valid Room ID");
-        return;
-      }
-      window.location.href = `/attempt-join?room_id=${roomId}`;
-    }
+  const qr = new Html5Qrcode("qr-reader");
+  let scanInterval;
+  let scannedOnce = false;
 
-    function sha256(text) {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(text);
-      return crypto.subtle.digest("SHA-256", data).then(hashBuffer => {
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
-      });
-    }
+  function startScan() {
+    if (scannedOnce) return;
 
-    const yourToken = document.cookie.split("; ").find(c => c.startsWith("chat_token="))?.split("=")[1];
-    const qr = new Html5Qrcode("qr-reader");
+    qr.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 200, height: 200 } },
+      async (qrCodeMessage) => {
+        if (scannedOnce) return;
+        scannedOnce = true;
+        await qr.stop();
 
-    qr.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
-      async qrCodeMessage => {
-        qr.stop();
-        document.getElementById("scannedResult").innerText = `Scanned Token: ${qrCodeMessage}`;
-
+        const scannedToken = qrCodeMessage.trim();
+        const yourToken = document.getElementById("yourToken").value.trim();
         if (!yourToken) {
-          alert("Your chat token is missing. Please log in again.");
+          alert("Enter your chat token before scanning.");
+          scannedOnce = false; // allow retry if input missing
           return;
         }
 
-        const tokens = [yourToken, qrCodeMessage.trim()].sort().join("");
-        const hashedRoomId = await sha256(tokens);
-        window.location.href = `/attempt-join?room_id=${hashedRoomId}`;
+        document.getElementById("scannedResult").innerText = `Scanned Peer Token: ${scannedToken}`;
+        const sortedTokens = [yourToken, scannedToken].sort().join("");
+        const roomId = await sha256(sortedTokens);
+
+        // Submit via hidden form
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/attempt-join";
+
+        const inputRoom = document.createElement("input");
+        inputRoom.type = "hidden";
+        inputRoom.name = "room_id";
+        inputRoom.value = roomId;
+
+        const inputToken = document.createElement("input");
+        inputToken.type = "hidden";
+        inputToken.name = "chat_token";
+        inputToken.value = yourToken;
+
+        form.appendChild(inputRoom);
+        form.appendChild(inputToken);
+        document.body.appendChild(form);
+        form.submit();
       },
-      error => {
-        console.log("QR ErroR")
+      (errorMsg) => {
+        console.warn("QR Scan Error:", errorMsg);
       }
     );
-  </script>
+  }
+
+  // 🕒 Retry every 5 seconds until scanned or stopped
+  scanInterval = setInterval(() => {
+    if (!scannedOnce) {
+      qr.stop().then(() => startScan()).catch(() => startScan());
+    } else {
+      clearInterval(scanInterval);
+    }
+  }, 10000);
+
+  startScan(); // initial start
+</script>
+
 </body>
 </html>
