@@ -6,6 +6,8 @@
   <title>Chat Room | PrivTalk</title>
   <link rel="stylesheet" href="/static/chat_style.css" />
   <link rel="icon" type="image/png" href="/static/icon.png" />
+  <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
+
 </head>
 <body>
   <div class="chat-wrapper">
@@ -27,6 +29,7 @@
     <div id="chatBox" class="chat-box"></div>
 
     <div class="chat-controls">
+      <button id="emoji-btn">😊</button>
       <input type="text" id="messageInput" placeholder="Type your message..." />
       <button id="sendBtn">Send</button>
     </div>
@@ -50,9 +53,9 @@
     const chatBox = document.getElementById("chatBox");
     const input = document.getElementById("messageInput");
     const sendBtn = document.getElementById("sendBtn");
-
+    const embutton = document.querySelector('#emoji-btn');
     const socket = new WebSocket(`ws://localhost:8000/ws/chat/${roomId}?chat_token=${chatToken}`);
-
+    
     socket.onopen = () => {
       console.log("✅ Connected to chat room");
     };
@@ -61,7 +64,7 @@
       const message = event.data;
       displayMessage(message, "friend");
     };
-
+    
     sendBtn.onclick = () => {
       const msg = input.value.trim();
       if (!msg) return;
