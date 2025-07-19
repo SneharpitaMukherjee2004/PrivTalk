@@ -1,64 +1,104 @@
-# app/routers/room.py
-
-from fastapi import APIRouter, Cookie, Request, Depends
-from fastapi.responses import JSONResponse, RedirectResponse
-from typing import Annotated
-from sqlalchemy.orm import Session
-import hashlib
+#app/routers/room.py
+from fastapi import APIRouter, Request, Depends, Query, Form, Cookie
+from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
-from app.database import SessionLocal, get_db
+from sqlalchemy.orm import Session
+from typing import Annotated
+import hashlib, os
+import qrcode
+
 from app.models.user import User
+from app.models.chatroom import ChatRoom
+from app.database import get_db
+from app.config import QR_DIR
 
 router = APIRouter()
-
-# Template engine setup
 templates = Jinja2Templates(directory="app/templates")
 
-# 🧠 Helper to generate room_id from 2 tokens (sorted then hashed)
+# 🔐 Helper to generate consistent room_id using sorted tokens
 def generate_room_id(token1: str, token2: str) -> str:
     tokens = sorted([token1.strip(), token2.strip()])
     return hashlib.sha256("".join(tokens).encode()).hexdigest()
 
+# 🔲 Generate & Save QR Code
+def generate_room_qr(room_id: str) -> str:
+    qr_path = os.path.join(QR_DIR, f"{room_id}.png")
+    if not os.path.exists(qr_path):
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=10,  # 📌 Increase size
+            border=4
+        )
+        qr.add_data(room_id)
+        qr.make(fit=True)
 
-# ✅ Route to create room (host provides 2nd user's chat_token)
+        img = qr.make_image(fill_color="black", back_color="white")
+        img.save(qr_path)
+    return f"/assets/qrcodes/{room_id}.png"
+
+# ✅ Create a Chat Room
 @router.get("/create-room")
 def create_room(
-    peer_token: str,
-    chat_token: str,
+    chat_token: str = Query(...),
+    peer_token: str = Query(...),
     db: Session = Depends(get_db)
 ):
     if not chat_token or not peer_token:
-        return JSONResponse(content={"success": False, "message": "Missing tokens"})
+        return RedirectResponse(url="/profile?error=missing_tokens", status_code=302)
 
     room_id = generate_room_id(chat_token, peer_token)
 
-    # Save to DB if not already
-    from app.models.chatroom import ChatRoom
-    existing = db.query(ChatRoom).filter(ChatRoom.room_id == room_id).first()
-    if not existing:
+    # 🗂️ Save room only if not already present
+    if not db.query(ChatRoom).filter_by(room_id=room_id).first():
         new_room = ChatRoom(room_id=room_id, host_token=chat_token, peer_token=peer_token)
         db.add(new_room)
         db.commit()
 
-    return JSONResponse(content={"success": True, "room_id": room_id})
+    # 🔳 Generate downloadable QR code
+    qr_url = generate_room_qr(room_id)
+
+    # 🚀 Redirect to chatroom.html
+    return RedirectResponse(
+        url=f"/chatroom?room_id={room_id}&chat_token={chat_token}&qr_url={qr_url}",
+        status_code=302
+    )
 
 
-
-
-
-# ✅ Route to join room (user must be valid part of room)
+# ✅ Render Joinroom Page
 @router.get("/joinroom")
 def joinroom_page(request: Request):
     return templates.TemplateResponse("joinroom.html", {"request": request})
 
 
+# ✅ Verify and Join Room (POST from joinroom.html)
+@router.post("/attempt-join")
+def attempt_join(
+    request: Request,
+    room_id: str = Form(...),
+    chat_token: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    room = db.query(ChatRoom).filter_by(room_id=room_id).first()
+    if not room:
+        return templates.TemplateResponse("joinroom.html", {
+            "request": request,
+            "error": "Room not found"
+        })
 
-# ✅ Final start-chat route (sets connect_chat cookie and redirects to /chat)
-# in app/routers/room.py
+    if chat_token in [room.host_token, room.peer_token]:
+        return RedirectResponse(
+            url=f"/chatroom?room_id={room_id}&chat_token={chat_token}",
+            status_code=302
+        )
 
-from app.models.chatroom import ChatRoom
+    return templates.TemplateResponse("joinroom.html", {
+        "request": request,
+        "error": "Access Denied"
+    })
 
+
+# ✅ Optional: Auto-login with Cookie + Join Room
 @router.get("/start-chat")
 def start_chat(
     room_id: str,
@@ -68,15 +108,21 @@ def start_chat(
     if not chat_token:
         return RedirectResponse(url="/login", status_code=302)
 
-    # 🔍 Check if the room exists
-    room = db.query(ChatRoom).filter(ChatRoom.room_id == room_id).first()
+    room = db.query(ChatRoom).filter_by(room_id=room_id).first()
     if not room:
         return RedirectResponse(url="/joinroom?error=room_not_found", status_code=302)
 
-    # 🔐 Check if user is allowed to join
     if chat_token not in [room.host_token, room.peer_token]:
         return RedirectResponse(url="/joinroom?error=unauthorized", status_code=302)
 
-    # ✅ Redirect to chatroom with params
     return RedirectResponse(url=f"/chatroom?room_id={room_id}&chat_token={chat_token}")
 
+
+@router.get("/chatroom")
+def chatroom_page(request: Request, room_id: str, chat_token: str, qr_url: str = "", db: Session = Depends(get_db)):
+    return templates.TemplateResponse("chatroom.html", {
+        "request": request,
+        "room_id": room_id,
+        "chat_token": chat_token,
+        "qr_url": qr_url
+    })

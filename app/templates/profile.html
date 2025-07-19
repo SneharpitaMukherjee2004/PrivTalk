@@ -39,7 +39,7 @@
       <div class="profile-field">
         <label>Chat Token</label>
         <input type="text" id="chatToken" value="{{ token }}" readonly>
-        <button class="copy-btn" onclick=copyToken()>Copy Token</button>
+        <button class="copy-btn" onclick="copyToken()">Copy Token</button>
         <span id="copyFeedback" style="color: lightgreen; display: none; font-size: 0.9rem;">Copied!</span>
       </div>
 
@@ -56,12 +56,13 @@
 
       <div class="action-buttons">
         <button class="edit-btn" onclick="window.location.href='/edit-profile?email={{ email }}'">Edit Profile</button>
-        <button class="old-connect-btn" onclick=createRoom()>Create Room</button>
+        <button class="old-connect-btn" onclick="createRoom()">Create Room</button>
         <button class="new-connect-btn" onclick="window.location.href='/joinroom'">Join Room</button>
       </div>
     </div>
 <script>
-  function copyToken() {
+  function copyToken() 
+  {
     const tokenInput = document.getElementById("chatToken");
     tokenInput.select();
     tokenInput.setSelectionRange(0, 99999);
@@ -74,23 +75,30 @@
       .catch(err => alert("Failed to copy token."));
   }
 
-  function createRoom() {
-    const myToken = "{{ token }}";
-    const peerToken = document.getElementById("peerToken").value.trim();
-    if (!peerToken) {
-      alert("Please enter the other user's chat token.");
-      return;
-    }
-    window.location.href = '/create-room?chat_token=${myToken}&peer_token=${peerToken}';
+function createRoom() {
+  const myToken   = document.getElementById("chatToken").value;
+  const peerToken = document.getElementById("peerToken").value.trim();
+
+  if (!peerToken) {
+    alert("Please enter the other user's chat token.");
+    return;
   }
+
+  console.log("console msg debug:", myToken, "and", peerToken);
+
+  // ✅ Just redirect
+  window.location.href = `/create-room?chat_token=${myToken}&peer_token=${peerToken}`;
+}
+
+
 
   document.addEventListener("DOMContentLoaded", () => {
     const chatToken = "{{ token }}";
-    fetch('/generate-qr?token=${chatToken}')
+    fetch(`/generate-qr?token=${chatToken}`)
       .then(res => res.json())
       .then(data => {
         if (data.filename) {
-          document.getElementById("downloadQr").href = '/assets/qrcodes/${data.filename}';
+          document.getElementById("downloadQr").href = `/assets/qrcodes/${data.filename}`;
         }
       })
       .catch(err => console.error("QR fetch failed", err));

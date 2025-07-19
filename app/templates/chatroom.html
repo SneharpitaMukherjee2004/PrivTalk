@@ -6,14 +6,30 @@
   <title>Chat Room | PrivTalk</title>
   <link rel="stylesheet" href="/static/chat_style.css" />
   <link rel="icon" type="image/png" href="/static/icon.png" />
+  <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
+
 </head>
 <body>
   <div class="chat-wrapper">
     <div class="chat-header">🔐 Private Chat Room</div>
+    <div class="chat-header">
+  <h2>Welcome to Room</h2>
+    <p style="font:18px">Room ID:</p> 
+    <p style="color:green;">{{ room_id }}</p>
+    <p style="font:10px; color:red;">Your token: {{ chat_token }}</p>
+
+{% if qr_url %}
+    <img src="{{ qr_url }}" alt="Room QR Code" style="max-width:150px; margin-top:10px;"/>
+    <br />
+    <a href="{{ qr_url }}" download="meeting_qr.png" style="color: blue; ">Download QR Code</a>
+
+{% endif %}
+</div>
 
     <div id="chatBox" class="chat-box"></div>
 
     <div class="chat-controls">
+      <button id="emoji-btn">😊</button>
       <input type="text" id="messageInput" placeholder="Type your message..." />
       <button id="sendBtn">Send</button>
     </div>
@@ -37,9 +53,9 @@
     const chatBox = document.getElementById("chatBox");
     const input = document.getElementById("messageInput");
     const sendBtn = document.getElementById("sendBtn");
-
+    const embutton = document.querySelector('#emoji-btn');
     const socket = new WebSocket(`ws://localhost:8000/ws/chat/${roomId}?chat_token=${chatToken}`);
-
+    
     socket.onopen = () => {
       console.log("✅ Connected to chat room");
     };
@@ -48,7 +64,7 @@
       const message = event.data;
       displayMessage(message, "friend");
     };
-
+    
     sendBtn.onclick = () => {
       const msg = input.value.trim();
       if (!msg) return;
