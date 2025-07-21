@@ -6,6 +6,75 @@
   <title>My Profile | PrivTalk</title>
   <link rel="stylesheet" href="/static/style.css" />
   <link rel="icon" type="image/png" href="/static/icon.png">
+  <style>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 15% auto;
+      padding: 20px 30px;
+      border-radius: 12px;
+      width: 400px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .modal-content h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .modal-content input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
+
+    .modal-content .btn-group {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .modal-content button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-cancel {
+      background-color: #ccc;
+    }
+
+    .btn-cancel:hover {
+      background-color: #999;
+    }
+
+    .btn-confirm {
+      background-color: #764ba2;
+      color: white;
+    }
+
+    .btn-confirm:hover {
+      background-color: #5a67d8;
+    }
+  </style>
 </head>
 
 <body>
@@ -49,61 +118,79 @@
         <a id="downloadQr" href="{{ qr_url }}" download="chat_token_qr.png" class="download-link">Download QR Code</a>
       </div>
 
-      <div class="profile-field">
-        <label>Enter Peer Token to Create Room</label>
-        <input type="text" id="peerToken" placeholder="Enter other person's chat token">
-      </div>
-
       <div class="action-buttons">
         <button class="edit-btn" onclick="window.location.href='/edit-profile?email={{ email }}'">Edit Profile</button>
-        <button class="old-connect-btn" onclick="createRoom()">Create Room</button>
+        <button class="old-connect-btn" onclick="openModal()">Create Room</button>
         <button class="new-connect-btn" onclick="window.location.href='/joinroom'">Join Room</button>
       </div>
     </div>
-<script>
-  function copyToken() 
-  {
-    const tokenInput = document.getElementById("chatToken");
-    tokenInput.select();
-    tokenInput.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(tokenInput.value)
-      .then(() => {
-        const feedback = document.getElementById("copyFeedback");
-        feedback.style.display = "inline";
-        setTimeout(() => feedback.style.display = "none", 2000);
-      })
-      .catch(err => alert("Failed to copy token."));
-  }
+  </main>
 
-function createRoom() {
-  const myToken   = document.getElementById("chatToken").value;
-  const peerToken = document.getElementById("peerToken").value.trim();
+  <!-- Modern Modal for Peer Token Input -->
+  <div id="peerModal" class="modal">
+    <div class="modal-content">
+      <h2>Enter Peer Token</h2>
+      <input type="text" id="peerTokenInput" placeholder="Enter token here...">
+      <div class="btn-group">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-confirm" onclick="submitPeerToken()">Create</button>
+      </div>
+    </div>
+  </div>
 
-  if (!peerToken) {
-    alert("Please enter the other user's chat token.");
-    return;
-  }
+  <script>
+    function copyToken() {
+      const tokenInput = document.getElementById("chatToken");
+      tokenInput.select();
+      tokenInput.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(tokenInput.value)
+        .then(() => {
+          const feedback = document.getElementById("copyFeedback");
+          feedback.style.display = "inline";
+          setTimeout(() => feedback.style.display = "none", 2000);
+        })
+        .catch(err => alert("Failed to copy token."));
+    }
 
-  console.log("console msg debug:", myToken, "and", peerToken);
+    function openModal() {
+      document.getElementById("peerModal").style.display = "block";
+    }
 
-  // ✅ Just redirect
-  window.location.href = `/create-room?chat_token=${myToken}&peer_token=${peerToken}`;
-}
+    function closeModal() {
+      document.getElementById("peerModal").style.display = "none";
+      document.getElementById("peerTokenInput").value = "";
+    }
 
+    function submitPeerToken() {
+      const myToken = document.getElementById("chatToken").value;
+      const peerToken = document.getElementById("peerTokenInput").value.trim();
 
+      if (!peerToken) {
+        alert("Please enter the peer token.");
+        return;
+      }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const chatToken = "{{ token }}";
-    fetch(`/generate-qr?token=${chatToken}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.filename) {
-          document.getElementById("downloadQr").href = `/assets/qrcodes/${data.filename}`;
-        }
-      })
-      .catch(err => console.error("QR fetch failed", err));
-  });
-</script>
-</main>
+      window.location.href = `/create-room?chat_token=${myToken}&peer_token=${peerToken}`;
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("peerModal");
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const chatToken = "{{ token }}";
+      fetch(`/generate-qr?token=${chatToken}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.filename) {
+            document.getElementById("downloadQr").href = `/assets/qrcodes/${data.filename}`;
+          }
+        })
+        .catch(err => console.error("QR fetch failed", err));
+    });
+  </script>
 </body>
 </html>

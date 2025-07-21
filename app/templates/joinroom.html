@@ -2,128 +2,198 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Join Room | PrivTalk</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/static/style.css" />
   <link rel="icon" type="image/png" href="/static/icon.png">
-  <script src="https://unpkg.com/html5-qrcode"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
   <style>
-    .container { max-width: 600px; margin: 40px auto; text-align: center; }
-    .section { margin-top: 40px; }
-    input[type="text"] {
-      width: 80%;
-      padding: 10px;
-      font-size: 1rem;
-      margin-bottom: 10px;
-      border: 1px solid #aaa;
-      border-radius: 6px;
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(to right, #dfe9f3, #ffffff);
+      margin: 0;
+      padding: 0;
     }
-    button {
-      padding: 10px 20px;
+
+    .header {
+      background-color: #764ba2;
+      color: white;
+      padding: 1rem 0;
+      text-align: center;
+    }
+
+    .app_name {
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .join-container {
+      max-width: 420px;
+      margin: 80px auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 6px;
+      color: #555;
+      font-weight: 500;
+      text-align: left;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
       font-size: 1rem;
-      background-color: #5a67d8;
+      margin-bottom: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #764ba2;
+      outline: none;
+    }
+
+    .qr-instruction {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .join-btn, .scan-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #764ba2;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 10px;
+      font-size: 1rem;
       cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
     }
-    button:hover { background-color: #434190; }
+
+    .join-btn:hover, .scan-btn:hover {
+      background-color: #5a67d8;
+    }
+
+    /* Scanner Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    #reader {
+      width: 300px;
+      margin: 1rem auto;
+    }
+
+    .close-btn {
+      background-color: #e53e3e;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
   </style>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Join a Chat Room</h1>
 
-    <!-- ✅ Manual Entry -->
-    <div class="section">
-      <h3>Enter Room ID & Your Chat Token</h3>
-      <form method="POST" action="/attempt-join">
-        <input type="text" name="room_id" placeholder="Enter Room ID" required><br>
-        <input type="text" name="chat_token" placeholder="Enter Your Chat Token" required><br>
-        <button type="submit">Join Room</button>
-      </form>
-    </div>
+  <div class="header">
+    <h1 class="app_name">PrivTalk</h1>
+  </div>
 
-    <!-- ✅ QR Code Option -->
-    <div class="section">
-      <h3>Or Scan Peer QR Code</h3>
-      <input type="text" id="yourToken" placeholder="Your Chat Token (Required for QR)" required><br>
-      <div id="qr-reader" style="width: 300px; margin: auto;"></div>
-      <p id="scannedResult" style="margin: 10px;"></p>
+  <div class="join-container">
+    <h1>🔗 Join Room</h1>
+
+    <form method="POST" action="/joinroom">
+      <label for="room_id">Enter Room ID</label>
+      <input type="text" name="room_id" id="room_id" placeholder="e.g., ROOM123ABC" required>
+
+      <p class="qr-instruction">or <button type="button" class="scan-btn" onclick="openScanner()">📷 Scan QR Code</button></p>
+
+      <input type="hidden" name="my_token" value="{{ token }}">
+
+      <button type="submit" class="join-btn">Join Room</button>
+    </form>
+  </div>
+
+  <!-- Modal for Scanner -->
+  <div class="modal" id="scannerModal">
+    <div class="modal-content">
+      <h3>Scan Peer QR Code</h3>
+      <div id="reader"></div>
+      <button class="close-btn" onclick="closeScanner()">Close</button>
     </div>
   </div>
-<script>
-  function sha256(text) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(text);
-    return crypto.subtle.digest("SHA-256", data).then(hashBuffer => {
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
-    });
-  }
 
-  const qr = new Html5Qrcode("qr-reader");
-  let scanInterval;
-  let scannedOnce = false;
+  <script>
+    let scanner;
 
-  function startScan() {
-    if (scannedOnce) return;
-
-    qr.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 200, height: 200 } },
-      async (qrCodeMessage) => {
-        if (scannedOnce) return;
-        scannedOnce = true;
-        await qr.stop();
-
-        const scannedToken = qrCodeMessage.trim();
-        const yourToken = document.getElementById("yourToken").value.trim();
-        if (!yourToken) {
-          alert("Enter your chat token before scanning.");
-          scannedOnce = false; // allow retry if input missing
-          return;
+    function openScanner() {
+      document.getElementById("scannerModal").style.display = "flex";
+      scanner = new Html5Qrcode("reader");
+      scanner.start(
+        { facingMode: "environment" },
+        {
+          fps: 10,
+          qrbox: 250
+        },
+        qrCodeMessage => {
+          document.getElementById("room_id").value = qrCodeMessage;
+          scanner.stop().then(() => {
+            document.getElementById("scannerModal").style.display = "none";
+          });
+        },
+        error => {
+          // silently ignore errors
         }
-
-        document.getElementById("scannedResult").innerText = `Scanned Peer Token: ${scannedToken}`;
-        const sortedTokens = [yourToken, scannedToken].sort().join("");
-        const roomId = await sha256(sortedTokens);
-
-        // Submit via hidden form
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = "/attempt-join";
-
-        const inputRoom = document.createElement("input");
-        inputRoom.type = "hidden";
-        inputRoom.name = "room_id";
-        inputRoom.value = roomId;
-
-        const inputToken = document.createElement("input");
-        inputToken.type = "hidden";
-        inputToken.name = "chat_token";
-        inputToken.value = yourToken;
-
-        form.appendChild(inputRoom);
-        form.appendChild(inputToken);
-        document.body.appendChild(form);
-        form.submit();
-      },
-      (errorMsg) => {
-        console.warn("QR Scan Error:", errorMsg);
-      }
-    );
-  }
-
-  // 🕒 Retry every 5 seconds until scanned or stopped
-  scanInterval = setInterval(() => {
-    if (!scannedOnce) {
-      qr.stop().then(() => startScan()).catch(() => startScan());
-    } else {
-      clearInterval(scanInterval);
+      );
     }
-  }, 10000);
 
-  startScan(); // initial start
-</script>
+    function closeScanner() {
+      if (scanner) {
+        scanner.stop().then(() => {
+          document.getElementById("scannerModal").style.display = "none";
+        });
+      } else {
+        document.getElementById("scannerModal").style.display = "none";
+      }
+    }
+  </script>
 
 </body>
 </html>

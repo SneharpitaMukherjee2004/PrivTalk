@@ -1,6 +1,6 @@
 #app/routers/room.py
-from fastapi import APIRouter, Request, Depends, Query, Form, Cookie
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi import APIRouter, Request, Depends, Query, Form, Cookie, HTTPException
+from fastapi.responses import RedirectResponse, JSONResponse 
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from typing import Annotated
@@ -14,6 +14,23 @@ from app.config import QR_DIR
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
+
+@router.post("/joinroom")
+def join_room(
+    my_token: str = Form(...),
+    room_id: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    room = db.query(ChatRoom).filter(ChatRoom.room_id == room_id).first()
+    if not room:
+        raise HTTPException(status_code=404, detail="Room does not exist")
+
+    # You can optionally log that user with token joined
+
+    return RedirectResponse(
+        url=f"/chatroom?room_id={room_id}&chat_token={my_token}",
+        status_code=302
+    )
 
 # 🔐 Helper to generate consistent room_id using sorted tokens
 def generate_room_id(token1: str, token2: str) -> str:

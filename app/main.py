@@ -1,7 +1,7 @@
 from fastapi import FastAPI 
 from fastapi.middleware.cors import CORSMiddleware 
 from fastapi.staticfiles import StaticFiles 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Query
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -102,6 +102,16 @@ def edit_profile_page(request: Request, email: str, db: Session = Depends(get_db
         "email": user.email,
         "profile_photo": user.profile_photo
     })'''
+
+@app.get("/joinroom", response_class=HTMLResponse)
+def serve_joinroom(request: Request, room_id: str = "", my_token: str = Query(...)):
+    return templates.TemplateResponse("joinroom.html", {
+        "request": request,
+        "token": my_token,
+        "room_id": room_id
+    })
+
+
 
 # databaseconnection
 from app.database import Base, engine

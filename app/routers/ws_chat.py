@@ -1,37 +1,45 @@
-# app/routers/ws_chat.py
-
-from fastapi import WebSocket, WebSocketDisconnect, Cookie, APIRouter
-from typing import Annotated, Dict, List
-from fastapi import WebSocket, WebSocketDisconnect, APIRouter
-from typing import Dict, List
-from urllib.parse import parse_qs
+from fastapi import WebSocket, WebSocketDisconnect, Depends
+from fastapi.routing import APIRouter
+from app.models.chatroom import ChatRoom
+from sqlalchemy.orm import Session
+from app.database import get_db
+from typing import Dict
 
 router = APIRouter()
-room_connections: Dict[str, List[WebSocket]] = {}
+active_connections: Dict[str, WebSocket] = {}
 
-@router.websocket("/ws/chat/{room_id}")
-async def chat_websocket(websocket: WebSocket, room_id: str):
+@router.websocket("/ws/chat")
+async def websocket_endpoint(websocket: WebSocket, room_id: str, chat_token: str, db: Session = Depends(get_db)):
+    # ✅ Accept the connection
     await websocket.accept()
 
-    # Extract query parameters manually
-    query = parse_qs(websocket.url.query)
-    chat_token = query.get("chat_token", [None])[0]
-
-    # Validate
-    if not chat_token:
-        await websocket.close(code=1008)
+    # ✅ Check room existence
+    room = db.query(ChatRoom).filter(ChatRoom.room_id == room_id).first()
+    if not room:
+        await websocket.send_text("❌ Room not found!")
+        await websocket.close()
         return
 
-    # Logically allow any token (you can validate more deeply using DB if needed)
-    if room_id not in room_connections:
-        room_connections[room_id] = []
-    room_connections[room_id].append(websocket)
+    # ✅ Check if user is part of the room
+    if chat_token != room.host_token and chat_token != room.peer_token:
+        await websocket.send_text("❌ You are not authorized for this room.")
+        await websocket.close()
+        return
+
+    # ✅ Add to active connections
+    active_connections[chat_token] = websocket
 
     try:
         while True:
-            msg = await websocket.receive_text()
-            for conn in room_connections[room_id]:
-                if conn != websocket:
-                    await conn.send_text(msg)
+            data = await websocket.receive_text()
+
+            # Send to the other user
+            recipient_token = room.peer_token if chat_token == room.host_token else room.host_token
+            recipient_ws = active_connections.get(recipient_token)
+
+            if recipient_ws:
+                await recipient_ws.send_text(data)
+            else:
+                await websocket.send_text("🔕 Peer not connected yet.")
     except WebSocketDisconnect:
-        room_connections[room_id].remove(websocket)
+        del active_connections[chat_token]

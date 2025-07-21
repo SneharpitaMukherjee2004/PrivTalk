@@ -54,6 +54,10 @@
     const input = document.getElementById("messageInput");
     const sendBtn = document.getElementById("sendBtn");
     const embutton = document.querySelector('#emoji-btn');
+
+    const chatToken = getQueryParam("chat_token");
+    const roomId = getQueryParam("room_id");
+
     const socket = new WebSocket(`ws://localhost:8000/ws/chat/${roomId}?chat_token=${chatToken}`);
     
     socket.onopen = () => {
