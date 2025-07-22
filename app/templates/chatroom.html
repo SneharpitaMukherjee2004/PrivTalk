@@ -16,7 +16,7 @@
   <h2>Welcome to Room</h2>
     <p style="font:18px">Room ID:</p> 
     <p style="color:green;">{{ room_id }}</p>
-    <p style="font:10px; color:red;">Your token: {{ chat_token }}</p>
+    <p style="display:none;font:10px; color:red;">Your token: {{ chat_token }}</p>
 
 {% if qr_url %}
     <img src="{{ qr_url }}" alt="Room QR Code" style="max-width:150px; margin-top:10px;"/>

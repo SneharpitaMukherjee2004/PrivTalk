@@ -8,7 +8,7 @@ from typing import Dict
 router = APIRouter()
 active_connections: Dict[str, WebSocket] = {}
 
-@router.websocket("/ws/chat")
+@router.websocket("/ws/chat/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str, chat_token: str, db: Session = Depends(get_db)):
     # ✅ Accept the connection
     await websocket.accept()

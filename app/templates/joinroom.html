@@ -100,10 +100,10 @@
 
     <form method="POST" action="/joinroom">
       <label for="my_token">Your Chat Token</label>
-      <input type="text" id = "my_token" name="my_token" value="{{ my_token }}" readonly>
+      <input type="text" id = "my_token" name="my_token" value="{{ my_token }}" style="color:grey;"readonly>
 
       <label for="room_id">Enter Room ID</label>
-      <input type="text" id = "room_id" name="room_id" id="room_id" placeholder="e.g., ROOM123ABC"value="{{ room_id or '' }}" required>
+      <input type="text" id = "room_id" name="room_id"  placeholder="e.g., ROOM123ABC"value="{{ room_id or '' }}" required style="color:orange;">
 
       <p class="qr-instruction">Or scan QR code to auto-fill Room ID:</p>
       <div class="qr-scan-box">
@@ -133,7 +133,7 @@
         qrCodeMessage => {
           roomInput.value = qrCodeMessage;
           qrScanner.stop().then(() => {
-            document.getElementById("scanner-container").innerHTML = "<p>QR Scanned ✔</p>";
+            document.getElementById("scanner-container").innerHTML = "<p style='color:green; '> Room ID  got via QR Scanner ✔<br>You can click on Join Button</p>";
           });
         },
         errorMessage => {

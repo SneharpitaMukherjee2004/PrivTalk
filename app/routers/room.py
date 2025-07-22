@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 import hashlib, os
 import qrcode
-
+from fastapi.responses import HTMLResponse
+from fastapi import File, UploadFile
 from app.models.user import User
 from app.models.chatroom import ChatRoom
 from app.database import get_db
@@ -93,13 +94,13 @@ def create_room(
 
 # ✅ Render Joinroom Page
 
-@router.get("/joinroom")
-def joinroom_page(request: Request, my_token: str = Query(default="")):
-    print (my_token)
-    return templates.TemplateResponse(
-        "joinroom.html",
-        {"request": request, "my_token": my_token}
-    )
+@router.get("/joinroom", response_class=HTMLResponse)
+async def join_room_page(request: Request, my_token: str = ""):
+    print("Received my_token:", my_token)
+    return templates.TemplateResponse("joinroom.html", {
+        "request": request,
+        "my_token": my_token
+    })
 
 # ✅ Verify and Join Room (POST from joinroom.html)
 '''@router.post("/attempt-join")
