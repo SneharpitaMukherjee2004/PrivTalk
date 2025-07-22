@@ -17,20 +17,29 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.post("/joinroom")
 def join_room(
+    request: Request,
     my_token: str = Form(...),
     room_id: str = Form(...),
     db: Session = Depends(get_db)
 ):
     room = db.query(ChatRoom).filter(ChatRoom.room_id == room_id).first()
+    
     if not room:
-        raise HTTPException(status_code=404, detail="Room does not exist")
+        return templates.TemplateResponse("joinroom.html", {
+            "request": request,
+            "error": "Room not found"
+        })
 
-    # You can optionally log that user with token joined
+    if my_token in [room.host_token, room.peer_token]:
+        return RedirectResponse(
+            url=f"/chatroom?room_id={room_id}&chat_token={my_token}",
+            status_code=302
+        )
 
-    return RedirectResponse(
-        url=f"/chatroom?room_id={room_id}&chat_token={my_token}",
-        status_code=302
-    )
+    return templates.TemplateResponse("joinroom.html", {
+        "request": request,
+        "error": "Access Denied"
+    })
 
 # 🔐 Helper to generate consistent room_id using sorted tokens
 def generate_room_id(token1: str, token2: str) -> str:
@@ -83,13 +92,17 @@ def create_room(
 
 
 # ✅ Render Joinroom Page
-@router.get("/joinroom")
-def joinroom_page(request: Request):
-    return templates.TemplateResponse("joinroom.html", {"request": request})
 
+@router.get("/joinroom")
+def joinroom_page(request: Request, my_token: str = Query(default="")):
+    print (my_token)
+    return templates.TemplateResponse(
+        "joinroom.html",
+        {"request": request, "my_token": my_token}
+    )
 
 # ✅ Verify and Join Room (POST from joinroom.html)
-@router.post("/attempt-join")
+'''@router.post("/attempt-join")
 def attempt_join(
     request: Request,
     room_id: str = Form(...),
@@ -112,7 +125,7 @@ def attempt_join(
     return templates.TemplateResponse("joinroom.html", {
         "request": request,
         "error": "Access Denied"
-    })
+    })'''
 
 
 # ✅ Optional: Auto-login with Cookie + Join Room

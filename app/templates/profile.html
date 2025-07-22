@@ -75,69 +75,6 @@
       background-color: #5a67d8;
     }
   </style>
-</head>
-
-<body>
-  <div class="header">
-    <h1 class="app_name">PrivTalk</h1>
-  </div>
-
-  <main class="container">
-    <h3 class="customer_msg">Welcome, {{ username }}</h3>
-    <div class="profile-container">
-
-      <div class="profile-header">
-        <h2>👤 My Profile</h2>
-        {% if profile_photo %}
-        <div class="profile-photo-top">
-          <img src="{{ profile_photo or '/static/default-user.png' }}" alt="Profile Photo" />
-        </div>
-        {% endif %}
-      </div>
-
-      <div class="profile-field">
-        <label>Username</label>
-        <input type="text" value="{{ username }}" readonly>
-      </div>
-
-      <div class="profile-field">
-        <label>Email</label>
-        <input type="text" value="{{ email }}" readonly>
-      </div>
-
-      <div class="profile-field">
-        <label>Chat Token</label>
-        <input type="text" id="chatToken" value="{{ token }}" readonly>
-        <button class="copy-btn" onclick="copyToken()">Copy Token</button>
-        <span id="copyFeedback" style="color: lightgreen; display: none; font-size: 0.9rem;">Copied!</span>
-      </div>
-
-      <div class="qr-container">
-        <h2>Chat Token QR Code</h2>
-        <img src="{{ qr_url }}" alt="QR Code" class="qr-image"/>
-        <a id="downloadQr" href="{{ qr_url }}" download="chat_token_qr.png" class="download-link">Download QR Code</a>
-      </div>
-
-      <div class="action-buttons">
-        <button class="edit-btn" onclick="window.location.href='/edit-profile?email={{ email }}'">Edit Profile</button>
-        <button class="old-connect-btn" onclick="openModal()">Create Room</button>
-        <button class="new-connect-btn" onclick="window.location.href='/joinroom'">Join Room</button>
-      </div>
-    </div>
-  </main>
-
-  <!-- Modern Modal for Peer Token Input -->
-  <div id="peerModal" class="modal">
-    <div class="modal-content">
-      <h2>Enter Peer Token</h2>
-      <input type="text" id="peerTokenInput" placeholder="Enter token here...">
-      <div class="btn-group">
-        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-        <button class="btn-confirm" onclick="submitPeerToken()">Create</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     function copyToken() {
       const tokenInput = document.getElementById("chatToken");
@@ -192,5 +129,67 @@
         .catch(err => console.error("QR fetch failed", err));
     });
   </script>
+</head>
+
+<body>
+  <div class="header">
+    <h1 class="app_name">PrivTalk</h1>
+  </div>
+
+  <main class="container">
+    <h3 class="customer_msg">Welcome, {{ username }}</h3>
+    <div class="profile-container">
+
+      <div class="profile-header">
+        <h2>👤 My Profile</h2>
+        {% if profile_photo %}
+        <div class="profile-photo-top">
+          <img src="{{ profile_photo or '/static/default-user.png' }}" alt="Profile Photo" />
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="profile-field">
+        <label>Username</label>
+        <input type="text" value="{{ username }}" readonly>
+      </div>
+
+      <div class="profile-field">
+        <label>Email</label>
+        <input type="text" value="{{ email }}" readonly>
+      </div>
+
+      <div class="profile-field">
+        <label>Chat Token</label>
+        <input type="text" id="chatToken" value="{{ token }}" readonly>
+        <button class="copy-btn" onclick="copyToken()">Copy Token</button>
+        <span id="copyFeedback" style="color: lightgreen; display: none; font-size: 0.9rem;">Copied!</span>
+      </div>
+
+      <div class="qr-container">
+        <h2>Chat Token QR Code</h2>
+        <img src="{{ qr_url }}" alt="QR Code" class="qr-image"/>
+        <a id="downloadQr" href="{{ qr_url }}" download="chat_token_qr.png" class="download-link">Download QR Code</a>
+      </div>
+
+      <div class="action-buttons">
+        <button class="edit-btn" onclick="window.location.href='/edit-profile?email={{ email }}'">Edit Profile</button>
+        <button class="old-connect-btn" onclick="openModal()">Create Room</button>
+        <button class="new-connect-btn" onclick="location.href='/joinroom?my_token={{ token }}'">Join Room</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modern Modal for Peer Token Input -->
+  <div id="peerModal" class="modal">
+    <div class="modal-content">
+      <h2>Enter Peer Token</h2>
+      <input type="text" id="peerTokenInput" placeholder="Enter token here...">
+      <div class="btn-group">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-confirm" onclick="submitPeerToken()">Create</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

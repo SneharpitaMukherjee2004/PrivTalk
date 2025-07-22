@@ -6,41 +6,27 @@
   <title>Join Room | PrivTalk</title>
   <link rel="stylesheet" href="/static/style.css" />
   <link rel="icon" type="image/png" href="/static/icon.png">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Montserrat', sans-serif;
-      background: linear-gradient(to right, #dfe9f3, #ffffff);
+      background: linear-gradient(to right, #e0ecff, #f8faff);
       margin: 0;
       padding: 0;
     }
 
-    .header {
-      background-color: #764ba2;
-      color: white;
-      padding: 1rem 0;
-      text-align: center;
-    }
-
-    .app_name {
-      font-size: 2rem;
-      font-weight: 600;
-      margin: 0;
-    }
-
     .join-container {
-      max-width: 420px;
+      max-width: 440px;
       margin: 80px auto;
       background: #fff;
       padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+      border-radius: 14px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
       text-align: center;
     }
 
     h1 {
-      color: #333;
-      font-size: 1.8rem;
+      text-align: center;
+      color: #764ba2;
       margin-bottom: 1.5rem;
     }
 
@@ -52,28 +38,17 @@
       text-align: left;
     }
 
-    input[type="text"] {
+    input[type="text"], input[readonly] {
       width: 100%;
       padding: 10px 14px;
       border-radius: 10px;
       border: 1px solid #ccc;
       font-size: 1rem;
-      margin-bottom: 14px;
-      transition: border-color 0.3s;
+      margin-bottom: 20px;
+      background-color: #f9f9f9;
     }
 
-    input[type="text"]:focus {
-      border-color: #764ba2;
-      outline: none;
-    }
-
-    .qr-instruction {
-      font-size: 0.9rem;
-      color: #666;
-      margin-bottom: 12px;
-    }
-
-    .join-btn, .scan-btn {
+    .join-btn {
       width: 100%;
       padding: 12px;
       background-color: #764ba2;
@@ -87,51 +62,35 @@
       margin-top: 10px;
     }
 
-    .join-btn:hover, .scan-btn:hover {
+    .join-btn:hover {
       background-color: #5a67d8;
     }
 
-    /* Scanner Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 10;
-      left: 0;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0, 0, 0, 0.6);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      background: #fff;
-      padding: 1rem;
-      border-radius: 10px;
-      text-align: center;
-    }
-
-    #reader {
-      width: 300px;
-      margin: 1rem auto;
-    }
-
-    .close-btn {
-      background-color: #e53e3e;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
+    .qr-instruction {
       margin-top: 10px;
+      font-size: 0.95rem;
+      color: #666;
+    }
+
+    .qr-scan-box {
+      margin: 20px 0;
+    }
+
+    #scanner-container {
+      width: 100%;
+      border: 1px dashed #999;
+      border-radius: 10px;
+      padding: 12px;
+      background: #f5f5f5;
+    }
+
+    video {
+      width: 100%;
+      border-radius: 10px;
     }
   </style>
-
-  <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
-
   <div class="header">
     <h1 class="app_name">PrivTalk</h1>
   </div>
@@ -140,60 +99,54 @@
     <h1>🔗 Join Room</h1>
 
     <form method="POST" action="/joinroom">
+      <label for="my_token">Your Chat Token</label>
+      <input type="text" id = "my_token" name="my_token" value="{{ my_token }}" readonly>
+
       <label for="room_id">Enter Room ID</label>
-      <input type="text" name="room_id" id="room_id" placeholder="e.g., ROOM123ABC" required>
+      <input type="text" id = "room_id" name="room_id" id="room_id" placeholder="e.g., ROOM123ABC"value="{{ room_id or '' }}" required>
 
-      <p class="qr-instruction">or <button type="button" class="scan-btn" onclick="openScanner()">📷 Scan QR Code</button></p>
-
-      <input type="hidden" name="my_token" value="{{ token }}">
+      <p class="qr-instruction">Or scan QR code to auto-fill Room ID:</p>
+      <div class="qr-scan-box">
+        <div id="scanner-container">
+          <video id="preview"></video>
+        </div>
+      </div>
 
       <button type="submit" class="join-btn">Join Room</button>
     </form>
   </div>
 
-  <!-- Modal for Scanner -->
-  <div class="modal" id="scannerModal">
-    <div class="modal-content">
-      <h3>Scan Peer QR Code</h3>
-      <div id="reader"></div>
-      <button class="close-btn" onclick="closeScanner()">Close</button>
-    </div>
-  </div>
-
+  <!-- QR Scanner Script -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
   <script>
-    let scanner;
+    const roomInput = document.getElementById("room_id");
 
-    function openScanner() {
-      document.getElementById("scannerModal").style.display = "flex";
-      scanner = new Html5Qrcode("reader");
-      scanner.start(
+    function startScanner() {
+      const qrScanner = new Html5Qrcode("scanner-container");
+
+      qrScanner.start(
         { facingMode: "environment" },
         {
           fps: 10,
           qrbox: 250
         },
         qrCodeMessage => {
-          document.getElementById("room_id").value = qrCodeMessage;
-          scanner.stop().then(() => {
-            document.getElementById("scannerModal").style.display = "none";
+          roomInput.value = qrCodeMessage;
+          qrScanner.stop().then(() => {
+            document.getElementById("scanner-container").innerHTML = "<p>QR Scanned ✔</p>";
           });
         },
-        error => {
-          // silently ignore errors
+        errorMessage => {
+          // console.log("QR scan error:", errorMessage);
         }
-      );
+      ).catch(err => {
+        console.error("Unable to start scanner", err);
+      });
     }
 
-    function closeScanner() {
-      if (scanner) {
-        scanner.stop().then(() => {
-          document.getElementById("scannerModal").style.display = "none";
-        });
-      } else {
-        document.getElementById("scannerModal").style.display = "none";
-      }
-    }
+    window.addEventListener("DOMContentLoaded", () => {
+      startScanner();
+    });
   </script>
-
 </body>
 </html>
