@@ -12,82 +12,102 @@
       background: linear-gradient(to right, #e0ecff, #f8faff);
       margin: 0;
       padding: 0;
-    }
+  }
 
-    .join-container {
-      max-width: 440px;
+  .join-container {
+      max-width: 480px;
       margin: 80px auto;
       background: #fff;
-      padding: 2rem;
-      border-radius: 14px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+      padding: 1.8rem;
+      border-radius: 16px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
       text-align: center;
-    }
+      box-sizing: border-box;
+      border-top: 6px solid #764ba2;
+  }
 
-    h1 {
-      text-align: center;
-      color: #764ba2;
-      margin-bottom: 1.5rem;
-    }
+  h1 {
+    text-align: center;
+    color: #764ba2;
+    margin-bottom: 1.5rem;
+    font-size: 1.7rem;
+  }
 
-    label {
-      display: block;
-      margin: 14px 0 6px;
-      color: #555;
-      font-weight: 500;
-      text-align: left;
-    }
+  label {
+    display: block;
+    margin: 14px 0 6px;
+    color: #444;
+    font-weight: 600;
+    text-align: left;
+    font-size: 0.95rem;
+  }
 
-    input[type="text"], input[readonly] {
-      width: 100%;
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-      margin-bottom: 20px;
-      background-color: #f9f9f9;
-    }
+  input[type="text"], input[readonly] {
+    width: calc(100% - 2px);
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+  }
 
-    .join-btn {
-      width: 100%;
-      padding: 12px;
-      background-color: #764ba2;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-      margin-top: 10px;
-    }
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #764ba2;
+  }
 
-    .join-btn:hover {
-      background-color: #5a67d8;
-    }
+  .join-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(to right, #764ba2, #667eea);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
+    transition: background 0.3s ease;
+    margin-top: 10px;
+  }
 
-    .qr-instruction {
-      margin-top: 10px;
-      font-size: 0.95rem;
-      color: #666;
-    }
+  .join-btn:hover {
+    background: linear-gradient(to right, #5a67d8, #6b46c1);
+  }
 
-    .qr-scan-box {
-      margin: 20px 0;
-    }
+  .qr-instruction {
+    margin-top: 10px;
+    font-size: 0.95rem;
+    color: #666;
+  }
 
-    #scanner-container {
-      width: 100%;
-      border: 1px dashed #999;
-      border-radius: 10px;
-      padding: 12px;
-      background: #f5f5f5;
-    }
+  .qr-scan-box {
+    margin: 20px 0;
+    box-sizing: border-box;
+  }
 
-    video {
-      width: 100%;
-      border-radius: 10px;
-    }
+  #scanner-container {
+    width: 100%;
+    border: 1px dashed #999;
+    border-radius: 12px;
+    padding: 0;
+    background: #f5f5f5;
+    box-sizing: border-box;
+    overflow: hidden;
+    margin: 0 auto;
+  }
+
+  video {
+    width: 100%;
+    border-radius: 10px;
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+
   </style>
 </head>
 <body>
