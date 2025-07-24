@@ -13,17 +13,34 @@
   <div class="chat-wrapper">
     <div class="chat-header">🔐 Private Chat Room</div>
     <div class="chat-header">
-  <h2>Welcome to Room</h2>
-    <p style="font:18px">Room ID:</p> 
-    <p style="color:green;">{{ room_id }}</p>
-    <p style="display:none;font:10px; color:red;">Your token: {{ chat_token }}</p>
-
-{% if qr_url %}
-    <img src="{{ qr_url }}" alt="Room QR Code" style="max-width:150px; margin-top:10px;"/>
-    <br />
-    <a href="{{ qr_url }}" download="meeting_qr.png" style="color: blue; ">Download QR Code</a>
-
-{% endif %}
+    <h2>Welcome to Room</h2>
+<div class='roomdata' style=" display: flex; flex-direction: column;  align-items: flex-start;    margin-top: 20px;">
+  <div class="room-header-line" style="  display: flex;justify-content: space-between;align-items: center;  width: 95%;
+    max-width: 750px;
+    gap: 2px;
+    flex-wrap: wrap">
+    <div>
+      <p class="room-id-label" style="font-weight: bold;
+    font-size: 18px;
+    color: #333;">Room ID:
+    <text id="room_id_val" style="word-break: break-all;font-size: 16px;color: #1ab10d;">{{ room_id }}</text>
+  </p>
+    </div>
+    {% if qr_url %}
+    <div class="qr-container" style=" display: flex; flex-direction: row; align-items: center;  margin: 5px;  padding:10px;justify-content: space-between; gap:6px;">
+      <img id="meetingQR_img" src="{{ qr_url }}" alt="Room QR Code" style="max-width: 100px; margin:10px; border:solid black 1px;"/>
+      <a id="meetingQR_download" href="{{ qr_url }}" download="meeting_qr.png" style="padding:5px; margin:10px; margin-right:20px; ">
+      Download Chatroom QR 
+    </a>
+    
+    </div>
+    {% endif %}
+  </div>
+  <button class="terminateButton" style="  background-color: red;
+    color: #ccc;
+    padding: auto;
+    margin: 10px;"> Terminate Room</button>
+</div>
 </div>
 
     <div id="chatBox" class="chat-box"></div>

@@ -1,179 +1,191 @@
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to right, #667eea, #764ba2);
-  margin: 0;
-  padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, lab(55.77% 22.5 -57.43), #af1ecd);
+    margin: 5;
+    padding: 2;
 }
 
 .chat-wrapper {
-  max-width: 700px;
-  margin: 60px auto;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  height: 85vh;
-  overflow: hidden;
+    max-width: 700px;
+    margin: 60px auto;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    height: 85vh;
+    overflow: hidden;
 }
 
 .chat-header {
-  text-align: center;
-  color: #333;
-  margin-bottom: 1rem;
-  font-weight: bold;
-  font-size: 1.3rem;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #764ba2;
+    text-align: center;
+    color: #333;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    font-size: 1.3rem;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #764ba2;
 }
 
 .chat-box {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-  border-radius: 12px;
-  background-color: #f0f4f8;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  scrollbar-width: thin;
-  scrollbar-color: #aaa #f0f4f8;
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    border-radius: 12px;
+    background-color: #f0f4f8;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    scrollbar-width: thin;
+    scrollbar-color: #aaa #f0f4f8;
 }
 
 .chat-box::-webkit-scrollbar {
-  width: 6px;
+    width: 6px;
 }
 
 .chat-box::-webkit-scrollbar-thumb {
-  background: #999;
-  border-radius: 3px;
+    background: #999;
+    border-radius: 3px;
 }
 
 .message {
-  display: flex;
-  flex-direction: column;
-  max-width: 75%;
+    display: flex;
+    flex-direction: column;
+    max-width: 75%;
 }
 
 .user {
-  align-self: flex-end;
-  text-align: right;
-  animation: slideInRight 0.3s ease-in-out;
+    align-self: flex-end;
+    text-align: right;
+    animation: slideInRight 0.3s ease-in-out;
 }
 
 .friend {
-  align-self: flex-start;
-  text-align: left;
-  animation: slideInLeft 0.3s ease-in-out;
+    align-self: flex-start;
+    text-align: left;
+    animation: slideInLeft 0.3s ease-in-out;
 }
 
 @keyframes slideInRight {
-  from { transform: translateX(30px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+    from {
+        transform: translateX(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 @keyframes slideInLeft {
-  from { transform: translateX(-30px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+    from {
+        transform: translateX(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 .bubble {
-  display: inline-block;
-  padding: 12px 16px;
-  border-radius: 20px;
-  background: #e0e0e0;
-  max-width: 100%;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+    display: inline-block;
+    padding: 12px 16px;
+    border-radius: 20px;
+    background: #e0e0e0;
+    max-width: 100%;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
 }
 
 .user .bubble {
-  background: linear-gradient(145deg, #43e97b 0%, #38f9d7 100%);
-  color: #000;
-  margin-left: auto;
+    background: linear-gradient(145deg, #43e97b 0%, #38f9d7 100%);
+    color: #000;
+    margin-left: auto;
 }
 
 .friend .bubble {
-  background: linear-gradient(145deg, #667eea, #764ba2);
-  color: #fff;
-  margin-right: auto;
+    background: linear-gradient(145deg, #667eea, #764ba2);
+    color: #fff;
+    margin-right: auto;
 }
 
 .timestamp {
-  font-size: 10px;
-  color: #aaa;
-  text-align: right;
-  margin-top: 4px;
+    font-size: 10px;
+    color: #c98383;
+    text-align: right;
+    margin-top: 4px;
 }
 
 .reaction-bar {
-  margin-top: 6px;
-  font-size: 18px;
-  user-select: none;
+    margin-top: 6px;
+    font-size: 18px;
+    user-select: none;
 }
 
 .reaction-bar span {
-  cursor: pointer;
-  padding: 0 4px;
-  transition: transform 0.2s ease;
+    cursor: pointer;
+    padding: 0 4px;
+    transition: transform 0.2s ease;
 }
 
 .reaction-bar span:hover {
-  transform: scale(1.2);
+    transform: scale(1.2);
 }
 
 .typing-indicator {
-  font-style: italic;
-  color: gray;
-  padding: 5px 15px;
-  font-size: 14px;
+    font-style: italic;
+    color: gray;
+    padding: 5px 15px;
+    font-size: 14px;
 }
 
 .chat-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 2px solid #764ba2;
-  flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 2px solid #764ba2;
+    flex-wrap: wrap;
 }
 
 .chat-controls input[type="text"] {
-  flex: 1;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  background: #fefefe;
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    background: #fefefe;
 }
 
 .chat-controls button,
 .chat-controls label {
-  background: #764ba2;
-  color: white;
-  border: none;
-  padding: 10px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background 0.2s ease;
+    background: #764ba2;
+    color: white;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s ease;
 }
 
 .chat-controls button:hover,
 .chat-controls label:hover {
-  background: #5a67d8;
+    background: #5a67d8;
 }
 
 input[type="file"] {
-  display: none;
+    display: none;
 }
 
 .emoji-button {
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
 }
