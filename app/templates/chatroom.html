@@ -74,6 +74,7 @@
 
 
     const socket = new WebSocket(`ws://localhost:8000/ws/chat/${roomId}?chat_token=${chatToken}`);
+      
     
     socket.onopen = () => {
       console.log("✅ Connected to chat room");
