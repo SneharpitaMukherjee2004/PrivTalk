@@ -151,9 +151,17 @@ def start_chat(
 
 @router.get("/chatroom")
 def chatroom_page(request: Request, room_id: str, chat_token: str, qr_url: str = "", db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.chattoken == chat_token).first()
+    if not user:
+        # Redirect to login or show error if token invalid
+        return RedirectResponse("/login")
+    
     return templates.TemplateResponse("chatroom.html", {
         "request": request,
         "room_id": room_id,
         "chat_token": chat_token,
+        "email": user.email,
+        "username": user.username,
+        "token": user.chattoken,
         "qr_url": qr_url
     })

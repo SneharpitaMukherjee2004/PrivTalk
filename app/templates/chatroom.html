@@ -59,11 +59,34 @@
 
     const chatToken = new URLSearchParams(window.location.search).get("chat_token");
     const roomId = new URLSearchParams(window.location.search).get("room_id");
-
+    const email = "{{ email }}";
+    const username = "{{ username }}";
+    const token = "{{ token }}";
     const socket = new WebSocket(`ws://localhost:8000/ws/chat/${roomId}?chat_token=${chatToken}`);
+    const terminateBtn = document.querySelector(".terminateButton");
+    terminateBtn.addEventListener("click", () => {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ type: "terminate" }));
+            setTimeout(() => {
+              socket.close();
+               window.location.href = `/profile?email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
+            },500)
+        }
+        else{
+          // ✅ Redirect to profile page with correct query params
+          window.location.href = `/profile?email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
+        }
+    });
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      if (data.type === "terminate") {
+        alert("The other user has left the room.");
+        setTimeout(() => {
+          window.location.href = `/profile?email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
+        },1000);
+        return;
+      }
 
       if (data.type === "chat") {
         displayMessage(data.msg, "friend", data.status);

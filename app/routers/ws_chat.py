@@ -40,6 +40,14 @@ async def websocket_endpoint(
             raw_data = await websocket.receive_text()
             data = json.loads(raw_data)
 
+            # ✅ Handle terminate separately
+            if data["type"] == "terminate":
+                recipient_ws = active_connections.get(recipient_token)
+                if recipient_ws:
+                    await recipient_ws.send_text(json.dumps({"type": "terminate"}))
+                break  # exit loop for the sender, they will be redirected
+
+
             # Broadcast to recipient if online
             recipient_ws = active_connections.get(recipient_token)
             if recipient_ws:
