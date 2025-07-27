@@ -7,103 +7,106 @@
   <link rel="stylesheet" href="/static/chat_style.css" />
   <link rel="icon" type="image/png" href="/static/icon.png" />
   <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
-
 </head>
 <body>
   <div class="chat-wrapper">
     <div class="chat-header">🔐 Private Chat Room</div>
+
     <div class="chat-header">
-    <h2>Welcome to Room</h2>
-<div class='roomdata' style=" display: flex; flex-direction: column;  align-items: flex-start;    margin-top: 20px;">
-  <div class="room-header-line" style="  display: flex;justify-content: space-between;align-items: center;  width: 95%;
-    max-width: 750px;
-    gap: 2px;
-    flex-wrap: wrap">
-    <div>
-      <p class="room-id-label" style="font-weight: bold;
-    font-size: 18px;
-    color: #333;">Room ID:
-    <text id="room_id_val" style="word-break: break-all;font-size: 16px;color: #1ab10d;">{{ room_id }}</text>
-  </p>
+      <h2>Welcome to Room</h2>
+      <div class="roomdata">
+        <div class="room-header-line">
+          <div>
+            <p class="room-id-label">
+              Room ID: <span id="room_id_val">{{ room_id }}</span>
+            </p>
+          </div>
+          {% if qr_url %}
+          <div class="qr-container">
+            <img id="meetingQR_img" src="{{ qr_url }}" alt="Room QR Code" class="qr-img"/>
+            <a id="meetingQR_download" href="{{ qr_url }}" download="meeting_qr.png" class="qr-download">
+              Download QR
+            </a>
+          </div>
+          {% endif %}
+        </div>
+        <button class="terminateButton">Terminate Room</button>
+      </div>
     </div>
-    {% if qr_url %}
-    <div class="qr-container" style=" display: flex; flex-direction: row; align-items: center;  margin: 5px;  padding:10px;justify-content: space-between; gap:6px;">
-      <img id="meetingQR_img" src="{{ qr_url }}" alt="Room QR Code" style="max-width: 100px; margin:10px; border:solid black 1px;"/>
-      <a id="meetingQR_download" href="{{ qr_url }}" download="meeting_qr.png" style="padding:5px; margin:10px; margin-right:20px; ">
-      Download Chatroom QR 
-    </a>
-    
-    </div>
-    {% endif %}
-  </div>
-  <button class="terminateButton" style="  background-color: red;
-    color: #ccc;
-    padding: auto;
-    margin: 10px;"> Terminate Room</button>
-</div>
-</div>
 
     <div id="chatBox" class="chat-box"></div>
+    <div id="typing-indicator" class="typing-indicator" style="display:none;">typing...</div>
 
     <div class="chat-controls">
       <button id="emoji-btn">😊</button>
+      <input type="file" id="fileInput" style="display:none;" />
+      <button id="fileBtn">📎</button>
+      <button id="recordBtn">🎤</button>
       <input type="text" id="messageInput" placeholder="Type your message..." />
       <button id="sendBtn">Send</button>
     </div>
   </div>
 
   <script>
-    // 🔍 Extract query parameters from URL
-    function getQueryParam(key) {
-      const params = new URLSearchParams(window.location.search);
-      return params.get(key);
-    }
-
-    const chatToken = getQueryParam("chat_token");
-    const roomId = getQueryParam("room_id");
-
-    if (!chatToken || !roomId) {
-      alert("Missing chat credentials. Please login or rejoin the room.");
-      window.location.href = "/profile";
-    }
-
     const chatBox = document.getElementById("chatBox");
     const input = document.getElementById("messageInput");
     const sendBtn = document.getElementById("sendBtn");
-    const embutton = document.querySelector('#emoji-btn');
+    const emojiBtn = document.getElementById("emoji-btn");
+    const fileBtn = document.getElementById("fileBtn");
+    const fileInput = document.getElementById("fileInput");
+    const recordBtn = document.getElementById("recordBtn");
+    let typingTimeout, mediaRecorder, audioChunks = [];
 
+    const chatToken = new URLSearchParams(window.location.search).get("chat_token");
+    const roomId = new URLSearchParams(window.location.search).get("room_id");
 
     const socket = new WebSocket(`ws://localhost:8000/ws/chat/${roomId}?chat_token=${chatToken}`);
-      
-    
-    socket.onopen = () => {
-      console.log("✅ Connected to chat room");
-    };
 
     socket.onmessage = (event) => {
-      const message = event.data;
-      displayMessage(message, "friend");
-    };
-    
-    sendBtn.onclick = () => {
-      const msg = input.value.trim();
-      if (!msg) return;
-      socket.send(msg);
-      displayMessage(msg, "user");
-      input.value = "";
+      const data = JSON.parse(event.data);
+
+      if (data.type === "chat") {
+        displayMessage(data.msg, "friend", data.status);
+        socket.send(JSON.stringify({ type: "seen" }));
+      } else if (data.type === "file") {
+        displayFileMessage(data.filename, data.url, "friend");
+      } else if (data.type === "audio") {
+        displayAudioMessage(data.url, "friend");
+      } else if (data.type === "typing") {
+        showTypingIndicator();
+      } else if (data.type === "seen") {
+        updateLastMessageStatus("seen");
+      }
     };
 
-    input.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") sendBtn.click();
+    sendBtn.onclick = sendMessage;
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") sendMessage();
+      else socket.send(JSON.stringify({ type: "typing" }));
     });
 
-    function displayMessage(msg, type) {
-      const wrapper = document.createElement("div");
-      wrapper.className = `message ${type}`;
+    function sendMessage() {
+      const msg = input.value.trim();
+      if (!msg) return;
 
+      socket.send(JSON.stringify({ type: "chat", msg: msg, status: "sent" }));
+      displayMessage(msg, "user", "sent");
+      input.value = "";
+    }
+
+    function displayMessage(msg, sender, status) {
+      const wrapper = document.createElement("div");
+      wrapper.className = `message ${sender}`;
       const bubble = document.createElement("div");
       bubble.className = "bubble";
       bubble.innerText = msg;
+
+      if (sender === "user") {
+        const tick = document.createElement("span");
+        tick.className = "message-status " + (status === "seen" ? "status-seen" : "status-sent");
+        bubble.appendChild(tick);
+      }
 
       const timestamp = document.createElement("div");
       timestamp.className = "timestamp";
@@ -111,10 +114,98 @@
 
       wrapper.appendChild(bubble);
       wrapper.appendChild(timestamp);
-
       chatBox.appendChild(wrapper);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
+
+    function showTypingIndicator() {
+      const ti = document.getElementById("typing-indicator");
+      ti.style.display = "block";
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => { ti.style.display = "none"; }, 1500);
+    }
+
+    function updateLastMessageStatus(status) {
+      const ticks = document.querySelectorAll(".message-status");
+      if (ticks.length > 0) {
+        ticks[ticks.length - 1].className = "message-status status-" + status;
+      }
+    }
+
+    // ✅ File Upload
+    fileBtn.onclick = () => fileInput.click();
+    fileInput.onchange = async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/upload", { method: "POST", body: formData });
+      const result = await response.json();
+
+      socket.send(JSON.stringify({ type: "file", filename: file.name, url: result.url }));
+      displayFileMessage(file.name, result.url, "user");
+    };
+
+    function displayFileMessage(name, url, sender) {
+      const wrapper = document.createElement("div");
+      wrapper.className = `message ${sender}`;
+      const link = document.createElement("a");
+      link.href = url;
+      link.target = "_blank";
+      link.innerText = `📎 ${name}`;
+      wrapper.appendChild(link);
+      chatBox.appendChild(wrapper);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // ✅ Audio
+    recordBtn.onclick = async () => {
+      if (!mediaRecorder || mediaRecorder.state === "inactive") {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = async () => {
+          const blob = new Blob(audioChunks, { type: "audio/webm" });
+          const formData = new FormData();
+          formData.append("file", blob, "voice.webm");
+
+          const res = await fetch("/upload", { method: "POST", body: formData });
+          const data = await res.json();
+
+          socket.send(JSON.stringify({ type: "audio", url: data.url }));
+          displayAudioMessage(data.url, "user");
+        };
+        mediaRecorder.start();
+        recordBtn.innerText = "⏹ Stop";
+      } else {
+        mediaRecorder.stop();
+        recordBtn.innerText = "🎤";
+      }
+    };
+
+    function displayAudioMessage(url, sender) {
+      const wrapper = document.createElement("div");
+      wrapper.className = `message ${sender}`;
+      const audio = document.createElement("audio");
+      audio.controls = true;
+      audio.src = url;
+      wrapper.appendChild(audio);
+      chatBox.appendChild(wrapper);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // ✅ Emoji Picker
+    const picker = new EmojiButton();
+    emojiBtn.addEventListener("click", () => {
+      picker.togglePicker(emojiBtn);
+    });
+    picker.on("emoji", emoji => {
+      input.value += emoji;
+      input.focus();
+    });
   </script>
 </body>
 </html>

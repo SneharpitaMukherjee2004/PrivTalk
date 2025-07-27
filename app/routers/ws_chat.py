@@ -4,42 +4,51 @@ from app.models.chatroom import ChatRoom
 from sqlalchemy.orm import Session
 from app.database import get_db
 from typing import Dict
+import json
 
 router = APIRouter()
 active_connections: Dict[str, WebSocket] = {}
 
 @router.websocket("/ws/chat/{room_id}")
-async def websocket_endpoint(websocket: WebSocket, room_id: str, chat_token: str, db: Session = Depends(get_db)):
-    # ✅ Accept the connection
+async def websocket_endpoint(
+    websocket: WebSocket,
+    room_id: str,
+    chat_token: str,
+    db: Session = Depends(get_db)
+):
     await websocket.accept()
 
-    # ✅ Check room existence
+    # ✅ Validate room
     room = db.query(ChatRoom).filter(ChatRoom.room_id == room_id).first()
     if not room:
-        await websocket.send_text("❌ Room not found!")
+        await websocket.send_text(json.dumps({"type": "error", "msg": "Room not found"}))
         await websocket.close()
         return
 
-    # ✅ Check if user is part of the room
-    if chat_token != room.host_token and chat_token != room.peer_token:
-        await websocket.send_text("❌ You are not authorized for this room.")
+    # ✅ Validate token
+    if chat_token not in [room.host_token, room.peer_token]:
+        await websocket.send_text(json.dumps({"type": "error", "msg": "Unauthorized"}))
         await websocket.close()
         return
 
-    # ✅ Add to active connections
+    # ✅ Save connection
     active_connections[chat_token] = websocket
+    recipient_token = room.peer_token if chat_token == room.host_token else room.host_token
 
     try:
         while True:
-            data = await websocket.receive_text()
+            raw_data = await websocket.receive_text()
+            data = json.loads(raw_data)
 
-            # Send to the other user
-            recipient_token = room.peer_token if chat_token == room.host_token else room.host_token
+            # Broadcast to recipient if online
             recipient_ws = active_connections.get(recipient_token)
-
             if recipient_ws:
-                await recipient_ws.send_text(data)
-            else:
-                await websocket.send_text("🔕 Peer not connected yet.")
+                await recipient_ws.send_text(json.dumps(data))
+
+            # Seen acknowledgments → only go back to sender
+            if data["type"] == "seen":
+                if chat_token in active_connections:
+                    await websocket.send_text(json.dumps({"type": "seen"}))
+
     except WebSocketDisconnect:
-        del active_connections[chat_token]
+        active_connections.pop(chat_token, None)
