@@ -53,6 +53,14 @@ async def websocket_endpoint(
             if recipient_ws:
                 await recipient_ws.send_text(json.dumps(data))
 
+            if data["type"] == "start_recording":
+                if recipient_ws:
+                    await recipient_ws.send_text(json.dumps({"type": "start_recording"}))
+
+            elif data["type"] == "stop_recording":
+                if recipient_ws:
+                    await recipient_ws.send_text(json.dumps({"type": "stop_recording"}))
+
             # Seen acknowledgments → only go back to sender
             if data["type"] == "seen":
                 if chat_token in active_connections:

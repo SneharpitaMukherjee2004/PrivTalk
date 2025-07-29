@@ -138,7 +138,7 @@ body {
 
 .typing-indicator {
   font-style: italic;
-  color: gray;
+  color: #4097ee;
   padding: 5px 15px;
   font-size: 14px;
 }
@@ -171,4 +171,33 @@ body {
 }
 .chat-controls input[type="file"] {
     display: none;
+}
+
+.voice-msg-container {
+  padding: 10px 12px;
+  background-color: #dbeeff;
+  border: 2px solid #b6dcff;
+  border-radius: 14px;
+  max-width: 160px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.voice-player {
+  width: 100%;
+  outline: none;
+  border-radius: 8px;
+}
+
+.voice-player::-webkit-media-controls-panel {
+  background-color: #eef6ff;
+  border-radius: 10px;
+}
+
+.voice-player::-webkit-media-controls-play-button {
+  background-color: #007bff;
+  border-radius: 50%;
+}
+
+.voice-player::-webkit-media-controls-play-button:hover {
+  background-color: #0056b3;
 }

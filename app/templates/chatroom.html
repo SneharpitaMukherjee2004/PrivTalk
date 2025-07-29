@@ -97,6 +97,10 @@
         displayAudioMessage(data.url, "friend");
       } else if (data.type === "typing") {
         showTypingIndicator();
+      } else if (data.type === "start_recording") {
+        showRecordingIndicator(true);
+      } else if (data.type === "stop_recording") {
+        showRecordingIndicator(false);
       } else if (data.type === "seen") {
         updateLastMessageStatus("seen");
       }
@@ -148,6 +152,18 @@
       typingTimeout = setTimeout(() => { ti.style.display = "none"; }, 1500);
     }
 
+    function showRecordingIndicator(isRecording) {
+      const ti = document.getElementById("typing-indicator");
+      if (isRecording) {
+        ti.innerText = "recording...";
+        ti.style.display = "block";
+      } else {
+        ti.style.display = "none";
+        ti.innerText = "typing...";
+      }
+    }
+
+
     function updateLastMessageStatus(status) {
       const ticks = document.querySelectorAll(".message-status");
       if (ticks.length > 0) {
@@ -189,8 +205,10 @@
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorder = new MediaRecorder(stream);
         audioChunks = [];
+        socket.send(JSON.stringify({ type: "start_recording" }));
         mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
         mediaRecorder.onstop = async () => {
+          socket.send(JSON.stringify({ type: "stop_recording" }));
           const blob = new Blob(audioChunks, { type: "audio/webm" });
           const formData = new FormData();
           formData.append("file", blob, "voice.webm");
@@ -212,13 +230,21 @@
     function displayAudioMessage(url, sender) {
       const wrapper = document.createElement("div");
       wrapper.className = `message ${sender}`;
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble voice-msg-container";
+
       const audio = document.createElement("audio");
-      audio.controls = true;
       audio.src = url;
-      wrapper.appendChild(audio);
+      audio.controls = true;
+      audio.className = "voice-player";
+
+      bubble.appendChild(audio);
+      wrapper.appendChild(bubble);
       chatBox.appendChild(wrapper);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
+
 
     // ✅ Emoji Picker
     const picker = new EmojiButton();
