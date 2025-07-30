@@ -34,8 +34,10 @@
       </div>
     </div>
 
-    <div id="chatBox" class="chat-box"></div>
-    <div id="typing-indicator" class="typing-indicator" style="display:none;">typing...</div>
+    <div id="chatBox" class="chat-box">
+      
+    </div>
+    <div id="typing-indicator" class="typing-indicator" style="display:none; color:green; font-weight:bold;">typing...</div>
 
     <div class="chat-controls">
       <button id="emoji-btn">😊</button>
@@ -64,27 +66,31 @@
     const token = "{{ token }}";
     const socket = new WebSocket(`ws://localhost:8000/ws/chat/${roomId}?chat_token=${chatToken}`);
     const terminateBtn = document.querySelector(".terminateButton");
-    terminateBtn.addEventListener("click", () => {
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: "terminate" }));
-            setTimeout(() => {
-              socket.close();
-               window.location.href = `/profile?email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
-            },500)
-        }
-        else{
-          // ✅ Redirect to profile page with correct query params
-          window.location.href = `/profile?email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
-        }
+
+    terminateBtn.addEventListener("click", async () => {
+    // Step 1: Notify peer via WebSocket
+    socket.send(JSON.stringify({ type: "terminate" }));
+
+    // Step 2: Call backend to delete room and QR
+    const roomId = document.getElementById("room_id_val").textContent;
+    const formData = new FormData();
+    formData.append("room_id", roomId);
+
+    await fetch("/terminate-room", {
+      method: "POST",
+      body: formData,
     });
 
-    socket.onmessage = (event) => {
+    // Step 3: Redirect the host
+    window.location.href = `/profile?email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
+  });
+  socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      
       if (data.type === "terminate") {
         alert("The other user has left the room.");
         setTimeout(() => {
-          window.location.href = `/profile?email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`;
-        },1000);
+          window.location.href = `/profile?email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`},5000);
         return;
       }
 

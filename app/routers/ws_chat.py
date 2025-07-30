@@ -68,3 +68,32 @@ async def websocket_endpoint(
 
     except WebSocketDisconnect:
         active_connections.pop(chat_token, None)
+
+from fastapi import APIRouter, Form, HTTPException, Depends
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models.chatroom import ChatRoom
+import os
+
+
+@router.post("/terminate-room")
+async def terminate_room(room_id: str = Form(...), db: Session = Depends(get_db)):
+    # ✅ Fetch the room
+    room = db.query(ChatRoom).filter(ChatRoom.room_id == room_id).first()
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+
+    # ✅ Delete associated QR code (if exists)
+    qr_path = f"app/assets/qrcodes/{room_id}.png"
+    if os.path.exists(qr_path):
+        os.remove(qr_path)
+
+    # ✅ Delete the room from the database
+    db.delete(room)
+    db.commit()
+
+    return {"message": "Room terminated successfully"}
+
+
+
+

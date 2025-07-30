@@ -178,12 +178,11 @@ body {
   background-color: #dbeeff;
   border: 2px solid #b6dcff;
   border-radius: 14px;
-  max-width: 160px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .voice-player {
-  width: 100%;
+  width: 200px;
   outline: none;
   border-radius: 8px;
 }
