@@ -90,7 +90,7 @@
       if (data.type === "terminate") {
         alert("The other user has left the room.");
         setTimeout(() => {
-          window.location.href = `/profile?email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`},5000);
+          window.location.href = `/profile?email=${encodeURIComponent(email)}&username=${encodeURIComponent(username)}&token=${encodeURIComponent(token)}`},1000);
         return;
       }
 
@@ -101,6 +101,7 @@
         displayFileMessage(data.filename, data.url, "friend");
       } else if (data.type === "audio") {
         displayAudioMessage(data.url, "friend");
+        socket.send(JSON.stringify({ type: "seen" }));
       } else if (data.type === "typing") {
         showTypingIndicator();
       } else if (data.type === "start_recording") {
@@ -138,6 +139,36 @@
       if (sender === "user") {
         const tick = document.createElement("span");
         tick.className = "message-status " + (status === "seen" ? "status-seen" : "status-sent");
+        tick.setAttribute("data-status", status);
+        bubble.appendChild(tick);
+      }
+
+      const timestamp = document.createElement("div");
+      timestamp.className = "timestamp";
+      timestamp.innerText = new Date().toLocaleTimeString();
+
+      wrapper.appendChild(bubble);
+      wrapper.appendChild(timestamp);
+      chatBox.appendChild(wrapper);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function displayAudioMessage(url, sender, status = "") {
+      const wrapper = document.createElement("div");
+      wrapper.className = `message ${sender}`;
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble voice-msg-container";
+
+      const audio = document.createElement("audio");
+      audio.src = url;
+      audio.controls = true;
+      audio.className = "voice-player";
+      bubble.appendChild(audio);
+
+      if (sender === "user" && status) {
+        const tick = document.createElement("span");
+        tick.className = "message-status " + (status === "seen" ? "status-seen" : "status-sent");
         bubble.appendChild(tick);
       }
 
@@ -171,11 +202,14 @@
 
 
     function updateLastMessageStatus(status) {
-      const ticks = document.querySelectorAll(".message-status");
+      const ticks = document.querySelectorAll(".message.user .message-status");
       if (ticks.length > 0) {
-        ticks[ticks.length - 1].className = "message-status status-" + status;
+        const lastTick = ticks[ticks.length - 1];
+        lastTick.className = "message-status status-" + status;
+        lastTick.setAttribute("data-status", status);
       }
     }
+
 
     // ✅ File Upload
     fileBtn.onclick = () => fileInput.click();
@@ -223,7 +257,7 @@
           const data = await res.json();
 
           socket.send(JSON.stringify({ type: "audio", url: data.url }));
-          displayAudioMessage(data.url, "user");
+          displayAudioMessage(data.url, "user", "sent");
         };
         mediaRecorder.start();
         recordBtn.innerText = "⏹ Stop";
@@ -232,25 +266,6 @@
         recordBtn.innerText = "🎤";
       }
     };
-
-    function displayAudioMessage(url, sender) {
-      const wrapper = document.createElement("div");
-      wrapper.className = `message ${sender}`;
-
-      const bubble = document.createElement("div");
-      bubble.className = "bubble voice-msg-container";
-
-      const audio = document.createElement("audio");
-      audio.src = url;
-      audio.controls = true;
-      audio.className = "voice-player";
-
-      bubble.appendChild(audio);
-      wrapper.appendChild(bubble);
-      chatBox.appendChild(wrapper);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
 
     // ✅ Emoji Picker
     const picker = new EmojiButton();
