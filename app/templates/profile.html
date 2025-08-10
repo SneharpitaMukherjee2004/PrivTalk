@@ -123,7 +123,7 @@
         .then(res => res.json())
         .then(data => {
           if (data.filename) {
-            document.getElementById("downloadQr").href = `/assets/qrcodes/${data.filename}`;
+            document.getElementById("downloadQr").href = `/assets/qrcodes/persons/${data.filename}`;
           }
         })
         .catch(err => console.error("QR fetch failed", err));
@@ -144,7 +144,7 @@
         <h2>👤 My Profile</h2>
         {% if profile_photo %}
         <div class="profile-photo-top">
-          <img src="{{ profile_photo or '/static/default-user.png' }}" alt="Profile Photo" />
+          <img src="{{ profile_photo or '/static/default_user.png' }}" alt="Profile Photo" />
         </div>
         {% endif %}
       </div>

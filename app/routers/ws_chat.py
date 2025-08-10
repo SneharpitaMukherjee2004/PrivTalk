@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from typing import Dict
 import json
-
+import shutil 
 router = APIRouter()
 active_connections: Dict[str, WebSocket] = {}
 
@@ -75,7 +75,7 @@ from app.database import get_db
 from app.models.chatroom import ChatRoom
 import os
 
-
+UPLOAD_DIR = "app/assets/meetings/uploads"
 @router.post("/terminate-room")
 async def terminate_room(room_id: str = Form(...), db: Session = Depends(get_db)):
     # ✅ Fetch the room
@@ -87,13 +87,14 @@ async def terminate_room(room_id: str = Form(...), db: Session = Depends(get_db)
     qr_path = f"app/assets/qrcodes/{room_id}.png"
     if os.path.exists(qr_path):
         os.remove(qr_path)
-
+        
+    # ✅ Delete meeting folder (if exists)
+    meeting_folder = os.path.join(UPLOAD_DIR, room_id)
+    if os.path.exists(meeting_folder):
+        shutil.rmtree(meeting_folder)
     # ✅ Delete the room from the database
     db.delete(room)
     db.commit()
 
-    return {"message": "Room terminated successfully"}
-
-
-
+    return {"message": "Room Terminated Successfully"}
 

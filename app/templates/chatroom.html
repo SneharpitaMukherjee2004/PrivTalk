@@ -215,11 +215,12 @@
     fileBtn.onclick = () => fileInput.click();
     fileInput.onchange = async () => {
       const file = fileInput.files[0];
+      const roomId = document.getElementById("room_id_val").textContent;
+      
       if (!file) return;
-
       const formData = new FormData();
       formData.append("file", file);
-
+      formData.append("meeting_id",roomId);
       const response = await fetch("/upload", { method: "POST", body: formData });
       const result = await response.json();
 
@@ -252,6 +253,9 @@
           const blob = new Blob(audioChunks, { type: "audio/webm" });
           const formData = new FormData();
           formData.append("file", blob, "voice.webm");
+          const roomId = document.getElementById("room_id_val").textContent;
+
+          formData.append("meeting_id",roomId);
 
           const res = await fetch("/upload", { method: "POST", body: formData });
           const data = await res.json();

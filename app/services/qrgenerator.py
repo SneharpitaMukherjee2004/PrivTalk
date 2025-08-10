@@ -3,7 +3,7 @@ import qrcode
 import os
 import uuid
 
-def create_qr_code(data: str, folder: str = "app/assets/qrcodes") -> str:
+def create_qr_code(data: str, folder: str = "app/assets/qrcodes/persons") -> str:
     """
     Creates a QR code for the given data only if it doesn't already exist.
     Returns the path to the QR code image.
