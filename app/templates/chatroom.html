@@ -227,19 +227,56 @@
       socket.send(JSON.stringify({ type: "file", filename: file.name, url: result.url }));
       displayFileMessage(file.name, result.url, "user");
     };
-
+//MSG DISPLAY 
     function displayFileMessage(name, url, sender) {
-      const wrapper = document.createElement("div");
-      wrapper.className = `message ${sender}`;
-      const link = document.createElement("a");
-      link.href = url;
-      link.target = "_blank";
-      link.innerText = `📎 ${name}`;
-      wrapper.appendChild(link);
-      chatBox.appendChild(wrapper);
-      chatBox.scrollTop = chatBox.scrollHeight;
+    const wrapper = document.createElement("div");
+    wrapper.className = `message ${sender}`;
+
+    // Detect file type by extension
+    const ext = name.split('.').pop().toLowerCase();
+
+    if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext)) {
+        // 📷 Image preview
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = name;
+        img.className = "chat-image";
+        wrapper.appendChild(img);
+
+    } else if (["mp4", "webm", "ogg"].includes(ext)) {
+        // 🎥 Video preview
+        const video = document.createElement("video");
+        video.src = url;
+        video.controls = true;
+        video.className = "chat-video";
+        wrapper.appendChild(video);
+
+    } else if (["mp3", "wav", "ogg", "webm"].includes(ext)) {
+        // 🎵 Audio player
+        const audio = document.createElement("audio");
+        audio.src = url;
+        audio.controls = true;
+        wrapper.appendChild(audio);
+
+    } else if (["pdf"].includes(ext)) {
+        // 📄 PDF inline view
+        const iframe = document.createElement("iframe");
+        iframe.src = url;
+        iframe.className = "chat-pdf";
+        wrapper.appendChild(iframe);
+
+    } else {
+        // 📎 Fallback: show link for other files
+        const link = document.createElement("a");
+        link.href = url;
+        link.target = "_blank";
+        link.innerText = `📎 ${name}`;
+        wrapper.appendChild(link);
     }
 
+    chatBox.appendChild(wrapper);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
     // ✅ Audio
     recordBtn.onclick = async () => {
       if (!mediaRecorder || mediaRecorder.state === "inactive") {
