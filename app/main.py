@@ -22,7 +22,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://127.0.0.1:8000",
-    "http://localhost:8000"],  # Adjust this for production
+    "http://localhost:8000","https://xeuvedbondlruuxnycht.storage.supabase.co/storage/v1/s3"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -6,6 +6,14 @@ from app.database import get_db
 from typing import Dict
 import json
 import shutil 
+from io import BytesIO
+import os
+from fastapi import APIRouter, Form, HTTPException, Depends
+from sqlalchemy.orm import Session
+from supabase import create_client
+from app.database import get_db
+from app.models.chatroom import ChatRoom
+
 router = APIRouter()
 active_connections: Dict[str, WebSocket] = {}
 
@@ -74,7 +82,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.chatroom import ChatRoom
 import os
-
+"""
 UPLOAD_DIR = "app/assets/meetings/uploads"
 @router.post("/terminate-room")
 async def terminate_room(room_id: str = Form(...), db: Session = Depends(get_db)):
@@ -97,4 +105,8 @@ async def terminate_room(room_id: str = Form(...), db: Session = Depends(get_db)
     db.commit()
 
     return {"message": "Room Terminated Successfully"}
+
+"""
+
+
 
