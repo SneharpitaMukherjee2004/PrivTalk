@@ -49,19 +49,11 @@ from app.models.chatroom import ChatRoom
 
 router = APIRouter()
 
-#chap.py
-
-"""
-def fillkey():
-    SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhldXZlZGJvbmRscnV1eG55Y2h0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDg5MDAyOSwiZXhwIjoyMDcwNDY2MDI5fQ.nSw32mih1tctiogO4rFElw4oxw13Xl3WVB6Z7Xv0ywQ"
-    return SUPABASE_KEY"""
-
 # 🔹 Supabase credentials
 SUPABASE_URL = "https://xeuvedbondlruuxnycht.supabase.co"
 SUPABASE_KEY = fillkey()
 BUCKET_NAME = "chat-media"  # Make sure bucket exists in Supabase
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
 
 # ✅ Upload endpoint
 @router.post("/upload")
