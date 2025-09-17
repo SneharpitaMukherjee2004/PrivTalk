@@ -5,7 +5,8 @@ from fastapi import FastAPI, Request, Query
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from app.services.qrgenerator import create_qr_code 
+from app.services.qrgenerator import create_person_qr
+from app.services.supabase import get_person_qr_url
 from fastapi.staticfiles import StaticFiles
 import os
 from sqlalchemy.orm import Session
@@ -72,13 +73,15 @@ def login_page(request: Request):
 def forgot_password_page(request: Request):
     return templates.TemplateResponse("forgot_password.html", {"request": request})
 
-#profilepage
+# profile page
 @app.get("/profile", response_class=HTMLResponse)
 def profile_page(request: Request, email: str, username: str, token: str, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == email).first()
 
-    qr_path = create_qr_code(token)
-    qr_url = "/" + qr_path.replace("app/", "")
+    # create_person_qr now returns the full public URL
+    qr_url = create_person_qr(token)
+    qr_url=get_person_qr_url(token)
+    # make sure this exists in your static folder
 
     return templates.TemplateResponse("profile.html", {
         "request": request,
@@ -88,6 +91,7 @@ def profile_page(request: Request, email: str, username: str, token: str, db: Se
         "qr_url": qr_url,
         "profile_photo": user.profile_photo if user else None
     })
+
 
 # Serve for edit_profile.html page 
 '''@app.get("/edit-profile", response_class=HTMLResponse)

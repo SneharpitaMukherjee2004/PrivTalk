@@ -4,6 +4,7 @@ import secrets
 import hashlib
 from app.services.email_service import send_verification_email,send_reset_password
 from app.services.token_service import generate_token,chat_token
+from app.services.supabase import upload_person_profile_pic
 from fastapi import APIRouter, HTTPException, Request
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
@@ -52,8 +53,7 @@ def get_edit_profile(request: Request, email: str, db: Session = Depends(get_db)
         "email": user.email,
         "profile_photo": user.profile_photo
     })
-
-# Logic for handle the submission for Edit Profile
+    
 @router.post("/update-profile")
 def update_profile(
     request: Request,
@@ -72,19 +72,32 @@ def update_profile(
         if not user:
             return JSONResponse(content={"error": "User not found"}, status_code=404)
 
+        # ✅ Update fields
         user.username = username
         user.email = email
 
         if password:
             user.hashed_password = hash_password_sha256(password)
 
+        # ✅ Handle profile photo
         if photo and photo.filename:
-            upload_dir = "app/assets/uploads"
-            os.makedirs(upload_dir, exist_ok=True)
-            file_path = os.path.join(upload_dir, photo.filename)
-            with open(file_path, "wb") as buffer:
+            # Save locally (optional backup)
+            person_dir = f"chat-media/assets/persons/{user.chattoken}"
+            os.makedirs(person_dir, exist_ok=True)
+
+            local_path = os.path.join(person_dir,photo.filename)
+            with open(local_path, "wb") as buffer:
                 shutil.copyfileobj(photo.file, buffer)
-            user.profile_photo = f"/assets/uploads/{photo.filename}"
+            
+            # Upload to Supabase
+            try:
+                profile_url = upload_person_profile_pic(user.chattoken, local_path)
+                user.profile_photo = profile_url  # ✅ Use cloud URL
+                print(f"✅ Uploaded profile photo to cloud: {profile_url}")
+            except Exception as e:
+                print(f"❌ Supabase upload failed: {e}")
+                # fallback to local path if needed
+                user.profile_photo = f"/assets/persons/{user.chattoken}/{photo.filename}"
 
         db.commit()
 
@@ -92,10 +105,36 @@ def update_profile(
             url=f"/profile?email={user.email}&username={user.username}&token={user.chattoken}",
             status_code=302
         )
-    
+
     except Exception as e:
         print("🔴 UPDATE ERROR:", str(e))
         return JSONResponse(content={"error": str(e)}, status_code=500)
+    finally:
+        os.remove(local_path)
+
+# ------------------- Generate QR -------------------
+from app.services.qrgenerator import create_person_qr
+
+@router.get("/generate-qr")
+def generate_qr(token: str):
+    """
+    Generate a QR code for a person and save in chat-media/assets/persons/{token}/qrcode/
+    Returns Supabase URL (or local path if needed).
+    """
+    # Ensure folder exists
+    qr_dir = f"chat-media/assets/persons/{token}/qrcode"
+    os.makedirs(qr_dir, exist_ok=True)
+
+    # Call QR generator → returns Supabase public URL
+    qr_url = create_person_qr(token)
+
+    # Optional: you can also return local path:
+    local_path = f"/assets/persons/{token}/qrcode/qr_{token}.png"
+
+    return JSONResponse(content={
+        "filename": local_path,
+        "supabase_url": qr_url
+    })
 
 #logic of verification for new user
 @router.post("/verify")
@@ -248,12 +287,5 @@ def login_user(req: LoginRequest):
     finally:
         db.close
 
-from app.services.qrgenerator import create_qr_code
 
-@router.get("/generate-qr")
-def generate_qr(token: str):
-    folder = "app/assets/qrcodes"
-    filepath = create_qr_code(token, folder)
-    filename = os.path.basename(filepath)
-    return JSONResponse(content={"filename": filename})
 
