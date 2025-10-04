@@ -11,7 +11,6 @@
 <body>
   <div class="chat-wrapper">
     <div class="chat-header">🔐 Private Chat Room</div>
-
     <div class="chat-header">
       <h2>Welcome to Room</h2>
       <div class="roomdata">
@@ -39,15 +38,84 @@
     </div>
     <div id="typing-indicator" class="typing-indicator" style="display:none; color:green; font-weight:bold;">typing...</div>
 
-    <div class="chat-controls">
-      <button id="emoji-btn">😊</button>
-      <input type="file" id="fileInput" style="display:none;" />
-      <button id="fileBtn">📎</button>
-      <button id="recordBtn">🎤</button>
-      <input type="text" id="messageInput" placeholder="Type your message..." />
-      <button id="sendBtn">Send</button>
+   <div class="chat-controls">
+  <div class="anchor" style="position:relative;">
+    <button id="toggleBtn" class="icon-btn" title="Emoji">😀</button>
+
+    <div id="panel" class="emoji-panel" role="dialog" aria-label="Emoji picker" style="display:none;">
+      <div class="emoji-toolbar">
+        <input id="search" type="search" placeholder="Search emoji..." />
+        <button id="closePanel" class="icon-btn">✕</button>
+      </div>
+
+      <div class="recent-row" id="recentRow"></div>
+      <div class="emoji-cats" id="cats"></div>
+      <div class="emoji-grid" id="grid"></div>
+      <div class="note">Click an emoji to insert.</div>
     </div>
-  </div>
+    
+  <input type="file" id="fileInput" style="display:none;" />
+  <button id="fileBtn">📎</button>
+  <button id="recordBtn">🎤</button>
+  
+</div> <!-- closes chat-controls -->
+
+  <input type="text" id="messageInput" placeholder="Type your message..." />
+  <button id="sendBtn">Send</button>
+</div>
+
+<style>
+.emoji-panel {
+  position: absolute;
+  top: -258px; 
+  left: 194px;
+  width: 436px;
+  background: #fff;
+  border: 1px solid #b1dc14ff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  border-radius: 10px;
+  padding: 10px;
+  z-index: 9999;
+}
+button#closePanel {
+    text-align: -webkit-center;
+    height: 35px;
+    background: black;
+    width: 32px;
+    padding: 1px;
+    margin: 0px;
+    border: solid 2px rgb(46 255 0 / 73%);
+}
+input#search{ border-radius: 10px;
+    height: 30px;
+    width: 397px;
+    text-align: -webkit-center;}
+.emoji-cats button, .recent-row button, .emoji-item {
+  cursor: pointer;
+  margin:1px;
+}
+button.cat-btn 
+{
+  background: darkgreen;
+  font-style: italic;
+}
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(8,1fr);
+  gap: 6px;
+  max-height: 200px;
+  overflow: auto;
+}
+.emoji-item {
+  font-size: 20px;
+  text-align: center;
+  padding: 6px;
+  border-radius: 6px;
+}
+.emoji-item:hover { background:#f0f0f0; }
+</style>
+
+
 
   <script>
     const chatBox = document.getElementById("chatBox");
@@ -152,7 +220,6 @@
       chatBox.appendChild(wrapper);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-
     function displayAudioMessage(url, sender, status = "") {
       const wrapper = document.createElement("div");
       wrapper.className = `message ${sender}`;
@@ -309,14 +376,302 @@
     };
 
     // ✅ Emoji Picker
-    const picker = new EmojiButton();
-    emojiBtn.addEventListener("click", () => {
-      picker.togglePicker(emojiBtn);
-    });
-    picker.on("emoji", emoji => {
-      input.value += emoji;
-      input.focus();
-    });
+    // ✅ Manual Emoji Picker
+const EMOJIS = [
+  // ------------- Smileys (30) -------------
+  {char:'😀', name:'grinning face', keywords:['happy','smile'], cat:'Smileys'},
+  {char:'😁', name:'beaming face', keywords:['happy','smile'], cat:'Smileys'},
+  {char:'😂', name:'face with tears of joy', keywords:['funny','lol'], cat:'Smileys'},
+  {char:'🤣', name:'rolling on floor laughing', keywords:['funny','rofl'], cat:'Smileys'},
+  {char:'😃', name:'smiling face', keywords:['happy','smile'], cat:'Smileys'},
+  {char:'😄', name:'smiling face with open mouth', keywords:['happy','smile'], cat:'Smileys'},
+  {char:'😅', name:'smiling with sweat', keywords:['nervous','funny'], cat:'Smileys'},
+  {char:'😆', name:'grinning squinting face', keywords:['laugh','funny'], cat:'Smileys'},
+  {char:'😉', name:'winking face', keywords:['flirt','wink'], cat:'Smileys'},
+  {char:'😊', name:'smiling with eyes', keywords:['happy','blush'], cat:'Smileys'},
+  {char:'😋', name:'face savoring food', keywords:['yummy','food'], cat:'Smileys'},
+  {char:'😎', name:'cool face', keywords:['sunglasses','cool'], cat:'Smileys'},
+  {char:'😍', name:'heart eyes', keywords:['love','heart'], cat:'Smileys'},
+  {char:'😘', name:'face blowing kiss', keywords:['kiss','love'], cat:'Smileys'},
+  {char:'😗', name:'kissing face', keywords:['kiss','love'], cat:'Smileys'},
+  {char:'😙', name:'kissing with smile', keywords:['kiss','happy'], cat:'Smileys'},
+  {char:'😚', name:'kissing eyes closed', keywords:['kiss','love'], cat:'Smileys'},
+  {char:'☺️', name:'smiling face', keywords:['blush','happy'], cat:'Smileys'},
+  {char:'🙂', name:'slightly smiling', keywords:['smile','happy'], cat:'Smileys'},
+  {char:'🤗', name:'hugging face', keywords:['hug','love'], cat:'Smileys'},
+  {char:'🤩', name:'star-struck', keywords:['amazing','love'], cat:'Smileys'},
+  {char:'🤔', name:'thinking face', keywords:['thinking','question'], cat:'Smileys'},
+  {char:'🤨', name:'raised eyebrow', keywords:['skeptical','question'], cat:'Smileys'},
+  {char:'😐', name:'neutral face', keywords:['meh','neutral'], cat:'Smileys'},
+  {char:'😑', name:'expressionless', keywords:['meh','bored'], cat:'Smileys'},
+  {char:'😶', name:'face without mouth', keywords:['silent','shy'], cat:'Smileys'},
+  {char:'🙄', name:'rolling eyes', keywords:['annoyed','bored'], cat:'Smileys'},
+  {char:'😏', name:'smirking', keywords:['smirk','flirt'], cat:'Smileys'},
+  {char:'😣', name:'persevering', keywords:['stress','sad'], cat:'Smileys'},
+  {char:'😥', name:'sad but relieved', keywords:['sad','phew'], cat:'Smileys'},
+
+  // ------------- Gestures (30) -------------
+  {char:'👍', name:'thumbs up', keywords:['ok','like'], cat:'Gestures'},
+  {char:'👎', name:'thumbs down', keywords:['dislike','no'], cat:'Gestures'},
+  {char:'👏', name:'clapping hands', keywords:['clap','applause'], cat:'Gestures'},
+  {char:'🙏', name:'folded hands', keywords:['pray','thanks'], cat:'Gestures'},
+  {char:'✌️', name:'victory hand', keywords:['peace','v'], cat:'Gestures'},
+  {char:'🤞', name:'crossed fingers', keywords:['hope','luck'], cat:'Gestures'},
+  {char:'🤟', name:'love-you gesture', keywords:['rock','love'], cat:'Gestures'},
+  {char:'🤘', name:'rock on', keywords:['rock','music'], cat:'Gestures'},
+  {char:'👌', name:'ok hand', keywords:['ok','perfect'], cat:'Gestures'},
+  {char:'🤙', name:'call me hand', keywords:['phone','call'], cat:'Gestures'},
+  {char:'👋', name:'waving hand', keywords:['hi','bye'], cat:'Gestures'},
+  {char:'✋', name:'raised hand', keywords:['stop','hi'], cat:'Gestures'},
+  {char:'🤚', name:'raised back of hand', keywords:['stop','hi'], cat:'Gestures'},
+  {char:'🖐️', name:'hand with fingers splayed', keywords:['hand','hi'], cat:'Gestures'},
+  {char:'🖖', name:'vulcan salute', keywords:['spock','live long'], cat:'Gestures'},
+  {char:'💪', name:'flexed biceps', keywords:['strong','muscle'], cat:'Gestures'},
+  {char:'🖕', name:'middle finger', keywords:['rude','angry'], cat:'Gestures'},
+  {char:'✊', name:'raised fist', keywords:['fight','power'], cat:'Gestures'},
+  {char:'👊', name:'fist', keywords:['punch','fight'], cat:'Gestures'},
+  {char:'🤛', name:'left-facing fist', keywords:['fight','punch'], cat:'Gestures'},
+  {char:'🤜', name:'right-facing fist', keywords:['fight','punch'], cat:'Gestures'},
+  {char:'🤲', name:'palms up together', keywords:['beg','please'], cat:'Gestures'},
+  {char:'🤝', name:'handshake', keywords:['deal','agreement'], cat:'Gestures'},
+  {char:'👐', name:'open hands', keywords:['welcome','open'], cat:'Gestures'},
+  {char:'🙌', name:'raising hands', keywords:['yay','celebrate'], cat:'Gestures'},
+  {char:'🙏', name:'folded hands', keywords:['pray','thanks'], cat:'Gestures'},
+  {char:'🤏', name:'pinching hand', keywords:['small','tiny'], cat:'Gestures'},
+  {char:'🤜', name:'punch right', keywords:['fight','punch'], cat:'Gestures'},
+  {char:'🤛', name:'punch left', keywords:['fight','punch'], cat:'Gestures'},
+
+  // ------------- Symbols (30) -------------
+  {char:'❤️', name:'red heart', keywords:['love','heart'], cat:'Symbols'},
+  {char:'💔', name:'broken heart', keywords:['sad','heart'], cat:'Symbols'},
+  {char:'💖', name:'sparkling heart', keywords:['love','heart'], cat:'Symbols'},
+  {char:'💘', name:'heart with arrow', keywords:['love','valentine'], cat:'Symbols'},
+  {char:'💝', name:'heart with ribbon', keywords:['love','gift'], cat:'Symbols'},
+  {char:'💞', name:'revolving hearts', keywords:['love','romance'], cat:'Symbols'},
+  {char:'💕', name:'two hearts', keywords:['love','heart'], cat:'Symbols'},
+  {char:'💟', name:'heart decoration', keywords:['love','heart'], cat:'Symbols'},
+  {char:'❣️', name:'heart exclamation', keywords:['love','heart'], cat:'Symbols'},
+  {char:'💢', name:'anger symbol', keywords:['angry','mad'], cat:'Symbols'},
+  {char:'💤', name:'zzz', keywords:['sleep','tired'], cat:'Symbols'},
+  {char:'💨', name:'dash', keywords:['speed','wind'], cat:'Symbols'},
+  {char:'🔥', name:'fire', keywords:['hot','lit'], cat:'Symbols'},
+  {char:'⭐', name:'star', keywords:['star','favorite'], cat:'Symbols'},
+  {char:'🌟', name:'glowing star', keywords:['star','shine'], cat:'Symbols'},
+  {char:'✨', name:'sparkles', keywords:['shine','magic'], cat:'Symbols'},
+  {char:'⚡', name:'high voltage', keywords:['electric','energy'], cat:'Symbols'},
+  {char:'☀️', name:'sun', keywords:['weather','bright'], cat:'Symbols'},
+  {char:'🌙', name:'crescent moon', keywords:['night','moon'], cat:'Symbols'},
+  {char:'☁️', name:'cloud', keywords:['weather','sky'], cat:'Symbols'},
+  {char:'❄️', name:'snowflake', keywords:['cold','winter'], cat:'Symbols'},
+  {char:'☂️', name:'umbrella', keywords:['rain','weather'], cat:'Symbols'},
+  {char:'⚓', name:'anchor', keywords:['sea','boat'], cat:'Symbols'},
+  {char:'♻️', name:'recycle', keywords:['eco','environment'], cat:'Symbols'},
+  {char:'💎', name:'gem stone', keywords:['jewel','precious'], cat:'Symbols'},
+  {char:'🎵', name:'musical note', keywords:['music','sound'], cat:'Symbols'},
+  {char:'🎶', name:'musical notes', keywords:['music','sound'], cat:'Symbols'},
+  {char:'🎼', name:'musical score', keywords:['music','note'], cat:'Symbols'},
+  {char:'⚽', name:'soccer ball', keywords:['sports','football'], cat:'Symbols'},
+  {char:'🏀', name:'basketball', keywords:['sports','ball'], cat:'Symbols'},
+  {char:'🏈', name:'american football', keywords:['sports','ball'], cat:'Symbols'},
+  {char:'⚾', name:'baseball', keywords:['sports','ball'], cat:'Symbols'},
+
+  // ------------- Food (30) -------------
+  {char:'🍎', name:'apple', keywords:['fruit','healthy'], cat:'Food'},
+  {char:'🍏', name:'green apple', keywords:['fruit','healthy'], cat:'Food'},
+  {char:'🍐', name:'pear', keywords:['fruit','healthy'], cat:'Food'},
+  {char:'🍊', name:'orange', keywords:['fruit','citrus'], cat:'Food'},
+  {char:'🍋', name:'lemon', keywords:['fruit','citrus'], cat:'Food'},
+  {char:'🍌', name:'banana', keywords:['fruit','yellow'], cat:'Food'},
+  {char:'🍉', name:'watermelon', keywords:['fruit','summer'], cat:'Food'},
+  {char:'🍇', name:'grapes', keywords:['fruit','purple'], cat:'Food'},
+  {char:'🍓', name:'strawberry', keywords:['fruit','red'], cat:'Food'},
+  {char:'🍈', name:'melon', keywords:['fruit','green'], cat:'Food'},
+  {char:'🍒', name:'cherries', keywords:['fruit','red'], cat:'Food'},
+  {char:'🍑', name:'peach', keywords:['fruit','pink'], cat:'Food'},
+  {char:'🍍', name:'pineapple', keywords:['fruit','tropical'], cat:'Food'},
+  {char:'🥭', name:'mango', keywords:['fruit','tropical'], cat:'Food'},
+  {char:'🥝', name:'kiwi', keywords:['fruit','green'], cat:'Food'},
+  {char:'🍅', name:'tomato', keywords:['vegetable','red'], cat:'Food'},
+  {char:'🥑', name:'avocado', keywords:['green','healthy'], cat:'Food'},
+  {char:'🍆', name:'eggplant', keywords:['vegetable','purple'], cat:'Food'},
+  {char:'🥔', name:'potato', keywords:['vegetable','brown'], cat:'Food'},
+  {char:'🥕', name:'carrot', keywords:['vegetable','orange'], cat:'Food'},
+  {char:'🌽', name:'corn', keywords:['vegetable','yellow'], cat:'Food'},
+  {char:'🌶️', name:'chili pepper', keywords:['spicy','vegetable'], cat:'Food'},
+  {char:'🥒', name:'cucumber', keywords:['vegetable','green'], cat:'Food'},
+  {char:'🥬', name:'lettuce', keywords:['vegetable','green'], cat:'Food'},
+  {char:'🥦', name:'broccoli', keywords:['vegetable','green'], cat:'Food'},
+  {char:'🧄', name:'garlic', keywords:['food','flavor'], cat:'Food'},
+  {char:'🧅', name:'onion', keywords:['food','flavor'], cat:'Food'},
+  {char:'🥜', name:'peanuts', keywords:['nut','snack'], cat:'Food'},
+  {char:'🌰', name:'chestnut', keywords:['nut','snack'], cat:'Food'},
+
+  // ------------- Animals (30) -------------
+  {char:'🐶', name:'dog', keywords:['pet','animal'], cat:'Animals'},
+  {char:'🐱', name:'cat', keywords:['pet','animal'], cat:'Animals'},
+  {char:'🐭', name:'mouse', keywords:['pet','animal'], cat:'Animals'},
+  {char:'🐹', name:'hamster', keywords:['pet','animal'], cat:'Animals'},
+  {char:'🐰', name:'rabbit', keywords:['pet','animal'], cat:'Animals'},
+  {char:'🦊', name:'fox', keywords:['wild','animal'], cat:'Animals'},
+  {char:'🐻', name:'bear', keywords:['wild','animal'], cat:'Animals'},
+  {char:'🐼', name:'panda', keywords:['wild','animal'], cat:'Animals'},
+  {char:'🐨', name:'koala', keywords:['wild','animal'], cat:'Animals'},
+  {char:'🐯', name:'tiger', keywords:['wild','animal'], cat:'Animals'},
+  {char:'🦁', name:'lion', keywords:['wild','animal'], cat:'Animals'},
+  {char:'🐮', name:'cow', keywords:['farm','animal'], cat:'Animals'},
+  {char:'🐷', name:'pig', keywords:['farm','animal'], cat:'Animals'},
+  {char:'🐸', name:'frog', keywords:['wild','animal'], cat:'Animals'},
+  {char:'🐵', name:'monkey', keywords:['wild','animal'], cat:'Animals'},
+  {char:'🙈', name:'see no evil', keywords:['monkey','funny'], cat:'Animals'},
+  {char:'🙉', name:'hear no evil', keywords:['monkey','funny'], cat:'Animals'},
+  {char:'🙊', name:'speak no evil', keywords:['monkey','funny'], cat:'Animals'},
+  {char:'🐒', name:'monkey', keywords:['wild','animal'], cat:'Animals'},
+  {char:'🦍', name:'gorilla', keywords:['wild','animal'], cat:'Animals'},
+  {char:'🐔', name:'chicken', keywords:['farm','animal'], cat:'Animals'},
+  {char:'🐧', name:'penguin', keywords:['bird','cold'], cat:'Animals'},
+  {char:'🐦', name:'bird', keywords:['fly','animal'], cat:'Animals'},
+  {char:'🐤', name:'chick', keywords:['bird','baby'], cat:'Animals'},
+  {char:'🐣', name:'hatching chick', keywords:['bird','baby'], cat:'Animals'},
+  {char:'🐥', name:'front-facing chick', keywords:['bird','baby'], cat:'Animals'},
+  {char:'🦆', name:'duck', keywords:['bird','farm'], cat:'Animals'},
+  {char:'🦅', name:'eagle', keywords:['bird','wild'], cat:'Animals'},
+
+  // ------------- Travel (30) -------------
+  {char:'✈️', name:'airplane', keywords:['travel','flight'], cat:'Travel'},
+  {char:'🚀', name:'rocket', keywords:['space','launch'], cat:'Travel'},
+  {char:'🚁', name:'helicopter', keywords:['travel','air'], cat:'Travel'},
+  {char:'🚂', name:'train', keywords:['travel','rail'], cat:'Travel'},
+  {char:'🚊', name:'tram', keywords:['travel','rail'], cat:'Travel'},
+  {char:'🚉', name:'station', keywords:['train','rail'], cat:'Travel'},
+  {char:'🚗', name:'car', keywords:['drive','vehicle'], cat:'Travel'},
+  {char:'🚕', name:'taxi', keywords:['ride','vehicle'], cat:'Travel'},
+  {char:'🚙', name:'SUV', keywords:['drive','vehicle'], cat:'Travel'},
+  {char:'🚌', name:'bus', keywords:['transport','vehicle'], cat:'Travel'},
+  {char:'🚎', name:'trolleybus', keywords:['transport','vehicle'], cat:'Travel'},
+  {char:'🏎️', name:'racing car', keywords:['fast','vehicle'], cat:'Travel'},
+  {char:'🚓', name:'police car', keywords:['vehicle','law'], cat:'Travel'},
+  {char:'🚑', name:'ambulance', keywords:['vehicle','help'], cat:'Travel'},
+  {char:'🚒', name:'fire truck', keywords:['vehicle','help'], cat:'Travel'},
+  {char:'🚐', name:'minivan', keywords:['transport','vehicle'], cat:'Travel'},
+  {char:'🛻', name:'pickup truck', keywords:['vehicle','drive'], cat:'Travel'},
+  {char:'🚚', name:'delivery truck', keywords:['vehicle','work'], cat:'Travel'},
+  {char:'🚛', name:'articulated truck', keywords:['vehicle','work'], cat:'Travel'},
+  {char:'🚜', name:'tractor', keywords:['farm','vehicle'], cat:'Travel'},
+  {char:'🏍️', name:'motorcycle', keywords:['bike','fast'], cat:'Travel'},
+  {char:'🛵', name:'scooter', keywords:['bike','fast'], cat:'Travel'},
+  {char:'🛺', name:'auto rickshaw', keywords:['vehicle','asia'], cat:'Travel'},
+  {char:'🛶', name:'canoe', keywords:['boat','water'], cat:'Travel'},
+  {char:'⛵', name:'sailboat', keywords:['boat','water'], cat:'Travel'},
+  {char:'🚤', name:'speedboat', keywords:['boat','fast'], cat:'Travel'},
+  {char:'🛳️', name:'passenger ship', keywords:['boat','travel'], cat:'Travel'},
+  {char:'⛴️', name:'ferry', keywords:['boat','travel'], cat:'Travel'},
+  {char:'🛥️', name:'motorboat', keywords:['boat','water'], cat:'Travel'},
+];
+
+
+let recent = [];
+const MAX_RECENT = 8;
+
+const toggleBtn = document.getElementById('toggleBtn');
+const panel = document.getElementById('panel');
+const grid = document.getElementById('grid');
+const search = document.getElementById('search');
+const catsEl = document.getElementById('cats');
+const recentRow = document.getElementById('recentRow');
+const inputEl = document.getElementById('messageInput');
+
+let activeCat = null;
+
+function togglePanel() {
+  panel.classList.contains('open') ? closePanelFn() : openPanel();
+}
+
+function openPanel() { 
+  panel.style.display = 'block';    // show panel
+  panel.setAttribute('aria-hidden','false'); 
+  search.focus(); 
+  renderRecent(); 
+}
+
+function closePanelFn() { 
+  panel.style.display = 'none';     // hide panel
+  panel.setAttribute('aria-hidden','true'); 
+}
+
+
+function renderCats() {
+  catsEl.innerHTML = '';
+  const allBtn = document.createElement('button');
+  allBtn.className='cat-btn active';
+  allBtn.textContent='All';
+  allBtn.onclick=()=>{activeCat=null; updateCatButtons(); renderGrid();}
+  catsEl.appendChild(allBtn);
+  Array.from(new Set(EMOJIS.map(e=>e.cat))).forEach(cat=>{
+    const btn = document.createElement('button');
+    btn.className='cat-btn';
+    btn.textContent=cat;
+    btn.onclick=()=>{activeCat=cat; updateCatButtons(); renderGrid();}
+    catsEl.appendChild(btn);
+  });
+}
+
+function updateCatButtons(){
+  Array.from(catsEl.children).forEach(btn=>{
+    btn.classList.toggle('active', (activeCat===null && btn.textContent==='All') || btn.textContent===activeCat);
+  });
+}
+
+function renderGrid(){
+  const q = search.value.trim().toLowerCase();
+  const items = EMOJIS.filter(e=>{
+    if(activeCat && e.cat!==activeCat) return false;
+    if(!q) return true;
+    return e.name.includes(q) || e.keywords.some(k=>k.includes(q)) || e.char.includes(q);
+  });
+  grid.innerHTML='';
+  if(items.length===0){ grid.innerHTML='<div style="padding:12px;color:#777">No results</div>'; return; }
+  items.forEach(e=>{
+    const div = document.createElement('div');
+    div.className='emoji-item';
+    div.textContent=e.char;
+    div.title=e.name;
+    div.onclick=()=> handleInsert(e.char);
+    grid.appendChild(div);
+  });
+}
+
+function addRecent(ch){ recent = recent.filter(x=>x!==ch); recent.unshift(ch); if(recent.length>MAX_RECENT) recent.pop(); renderRecent(); }
+function renderRecent(){
+  recentRow.innerHTML=''; if(recent.length===0) return;
+  recent.forEach(ch=>{
+    const btn = document.createElement('button');
+    btn.className='cat-btn';
+    btn.textContent=ch;
+    btn.onclick=()=> handleInsert(ch);
+    recentRow.appendChild(btn);
+  });
+}
+
+function handleInsert(ch){
+  const el = inputEl;
+  const start = el.selectionStart||0;
+  const end = el.selectionEnd||0;
+  el.value = el.value.slice(0,start)+ch+el.value.slice(end);
+  const pos = start+ch.length;
+  el.setSelectionRange(pos,pos);
+  addRecent(ch);
+  el.focus();
+}
+
+toggleBtn.onclick=(e)=>{ e.stopPropagation(); togglePanel(); }
+document.getElementById('closePanel').onclick=(e)=>{ e.stopPropagation(); closePanelFn(); }
+panel.onclick=(e)=>{ e.stopPropagation(); }
+document.addEventListener('click',()=>closePanelFn());
+search.addEventListener('input', renderGrid);
+
+renderCats();
+renderGrid();
+
   </script>
 </body>
 </html>
