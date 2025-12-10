@@ -2,7 +2,9 @@
 _A privacy-first communication platform built for secure one-to-one meetings._
 
 ## Overview
-PrivTalk enables secure communication through unique chat tokens and private deterministic chatrooms. Users authenticate via email, manage profiles, and create or join encrypted sessions, with all media and QR assets stored in Supabase. Full cleanup—cloud meeting folder deletion, QR removal, and local temp file handling—is now fully implemented and functional.
+PrivTalk enables secure communication through unique chat tokens and private deterministic chatrooms. 
+Users authenticate via email, manage profiles, and create or join encrypted sessions, with all media and QR assets stored in Supabase Cloud. 
+Full cleanup—cloud meeting folder deletion, QR removal, and local temp file handling—is now fully functional.
 
 ## Features
 - Email verification & login (username / email)
@@ -16,9 +18,9 @@ PrivTalk enables secure communication through unique chat tokens and private det
 - Meeting QR generation
 - Automatic Supabase meeting-folder cleanup on termination
 - Automatic local temp file cleanup
-- Unauthorized room join detection with alert
+- Unauthorized room join deny
 
-## Storage Architecture
+## Cloud Storage Architecture
 ```
 chat-media/
  └── assets/
@@ -33,13 +35,11 @@ chat-media/
 ```
 
 ## Contributors
-- **Sneharpita Mukherjee** — UI/UX & Frontend  
-- **Soumodeep Das** — Backend, Cloud, WebSockets  
+- **Sneharpita Mukherjee** — Planning & Logic creation, Frontend handeling, Testing & recommendation — [Github]( https://github.com/SneharpitaMukherjee2004 )
+- **Soumodeep Das** — UI|UX planning, Backend handeling, Problem Solving — [Github]( https://github.com/SoumodeepDas2004 )
 
 ## Future Plans
-- E2E encryption  
 - Video/voice calling  
-- Group rooms  
-- PWA & mobile app  
-- Message reactions, typing indicator, and chat history export  
+- Group rooms    
+- Message reactions and live chat  export  
 
