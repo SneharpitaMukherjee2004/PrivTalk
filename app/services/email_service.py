@@ -45,14 +45,14 @@ def send_reset_password(email:str,token:str):
 
     msg = MIMEText(html_body, "html")
     msg["Subject"] = "🔐 Reset Your PrivTalk Password"
-    msg["From"] = "privtalk8@gmail.com"
+    msg["From"] = "privtalkorg@gmail.com"
     msg["To"] = email
 
     try:
         with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.starttls()
-            server.login("privtalk8@gmail.com", "ygtdgvfwoifcqeap")
-            server.sendmail("privtalk8@gmail.com", email, msg.as_string())
+            server.login("privtalkorg@gmail.com", "zigb wxhp qaep kzka")
+            server.sendmail("privtalkorg@gmail.com", email, msg.as_string())
             print(f"[RESET SENT] Email sent to {email}")
     except Exception as e:
         print("[EMAIL ERROR]", e)
@@ -80,8 +80,8 @@ def send_verification_email(email: str, token: str, password: str,username:str):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     link = f"http://localhost:8000/verify-email?token={token}"
 
-    sender = "privtalk8@gmail.com"
-    password = "ygtdgvfwoifcqeap"  # Use an app password for Gmail
+    sender = "privtalkorg@gmail.com"
+    password = "zigb wxhp qaep kzka"  # Use an app password for Gmail
 
     html_body = f"""
     <html>

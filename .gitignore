@@ -1,0 +1,17 @@
+# Python cache folders
+__pycache__/
+app/__pycache__/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+
+# Compiled Python files
+*.pyc
+*.pyo
+*.pyd
+*.exe
+# Virtual environments
+venv/
+.env/
